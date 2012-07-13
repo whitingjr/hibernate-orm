@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 version="1.0"
+        >
+    <entity name="org.spec.jent.ejb.orders.entity.Customer" mutable="true" table="O_CUSTOMER">
+        <cache usage="transactional" include="all"/>
+        <id name="id" type="java.lang.Integer" column="C_ID" access="field">
+            <generator class="assigned"/>
+        </id>
+        <version name="version" access="field" column="C_VERSION" type="integer"/>
+        <property name="firstName" type="java.lang.String" column="C_FIRST"/>
+        <property name="lastName" type="java.lang.String" column="C_LAST"/>
+        <property name="contact" type="java.lang.String" column="C_CONTACT"/>
+        <property name="since" type="java.util.Calendar" column="C_SINCE"/>
+        <property name="balance" type="java.math.BigDecimal" column="C_BALANCE"/>
+        <property name="credit" type="java.lang.String" column="C_CREDIT"/>
+        <property name="creditLimit" type="java.math.BigDecimal" column="C_CREDIT_LIMIT"/>
+        <property name="ytdPayment" type="java.math.BigDecimal" column="C_YTD_PAYMENT"/>
+        <component name="address" class="org.spec.jent.common.Address" insert="true" update="true">
+            <property name="street1" type="java.lang.String" column="C_STREET1"/>
+            <property name="street2" type="java.lang.String" column="C_STREET2"/>
+            <property name="city" type="java.lang.String" column="C_CITY"/>
+            <property name="state" type="java.lang.String" column="C_STATE"/>
+            <property name="country" type="java.lang.String" column="C_COUNTRY"/>
+            <property name="zip" type="java.lang.String" column="C_ZIP"/>
+            <property name="phone" type="java.lang.String" column="C_PHONE"/>
+        </component>
+        <bag name="customerInventories" access="field" table="O_CUSTINVENTORY" lazy="true" cascade="all">
+            <cache usage="transactional" include="all"/>
+            <key>
+                <column name="CI_CUSTOMERID" not-null="true"/>
+            </key>
+            <one-to-many class="org.spec.jent.ejb.orders.entity.CustomerInventory"/>
+        </bag>
+        
+    </entity>
+</entity-mappings>
