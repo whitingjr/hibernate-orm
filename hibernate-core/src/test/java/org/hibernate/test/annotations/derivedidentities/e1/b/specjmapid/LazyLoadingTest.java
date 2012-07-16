@@ -22,22 +22,21 @@
 
 package org.hibernate.test.annotations.derivedidentities.e1.b.specjmapid;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.math.BigDecimal;
 import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.test.annotations.derivedidentities.e1.b.specjmapid.ondemand.CustomerDemand;
+import org.hibernate.test.annotations.derivedidentities.e1.b.specjmapid.ondemand.CustomerInventoryDemand;
+import org.hibernate.test.annotations.derivedidentities.e1.b.specjmapid.ondemand.CustomerInventoryDemandPK;
+import org.hibernate.test.annotations.derivedidentities.e1.b.specjmapid.ondemand.ItemDemand;
 import org.hibernate.testing.junit4.BaseCoreFunctionalTestCase;
-import org.junit.Assert;
 import org.junit.Before;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Test;
 
 public class LazyLoadingTest extends BaseCoreFunctionalTestCase{
 
@@ -46,6 +45,7 @@ public class LazyLoadingTest extends BaseCoreFunctionalTestCase{
       System.setProperty( "hibernate.enable_funcky_on_demand_loading", "true" );
    }
 
+   @Test
    public void testOnDemandLoading()
    {
       Session s;
@@ -53,28 +53,34 @@ public class LazyLoadingTest extends BaseCoreFunctionalTestCase{
       s = openSession();
       tx = s.beginTransaction();
       // store entity in datastore 
-      Customer cust = new Customer("John", "Doe", "123456", "1.0", new BigDecimal(1),new BigDecimal(1), new BigDecimal(5));
-      Item item = new Item();
-      item.setName("widget");
-      cust.addInventory(item, 1, new BigDecimal(500));
+      CustomerDemand cust = new CustomerDemand("John", "Doe", "123456", "1.0", new BigDecimal(1),new BigDecimal(1), new BigDecimal(5));
       s.persist(cust);
+      ItemDemand item = new ItemDemand();
+      item.setId("1");
+      item.setName("widget");
+      s.persist(item);
+      s.flush();
+      s.clear();
+      
+      cust.addInventory(item, 1, new BigDecimal(500));
+      s.merge(cust);
+      
       Integer lazyId = cust.getId();
       tx.commit();
-      s.clear();
       
       // load the lazy entity, orm configuration loaded during @Before defines loading
       tx = s.beginTransaction();
-      Customer lazyCustomer = (Customer)s.get(Customer.class, lazyId);
+      CustomerDemand lazyCustomer = (CustomerDemand)s.get(CustomerDemand.class, lazyId);
       assertNotNull(lazyCustomer);
       tx.commit(); // read-only
       s.clear();
       s.close();
       
       // access the association, outside the session that loaded the entity
-      List<CustomerInventory> inventories = cust.getInventories(); // on-demand load
+      List<CustomerInventoryDemand> inventories = cust.getInventories(); // on-demand load
       assertNotNull(inventories);
       assertEquals(1, inventories.size());
-      CustomerInventory inv = inventories.get(0);
+      CustomerInventoryDemand inv = inventories.get(0);
       assertNotNull(inv);
       assertEquals(inv.getQuantity(), 1); // field access
    }
@@ -88,10 +94,10 @@ public class LazyLoadingTest extends BaseCoreFunctionalTestCase{
    @Override
    protected Class[] getAnnotatedClasses() {
        return new Class[] {
-               Customer.class,
-               CustomerInventory.class,
-               CustomerInventoryPK.class,
-               Item.class
+               CustomerDemand.class,
+               CustomerInventoryDemand.class,
+               CustomerInventoryDemandPK.class,
+               ItemDemand.class
 
        };
    }
