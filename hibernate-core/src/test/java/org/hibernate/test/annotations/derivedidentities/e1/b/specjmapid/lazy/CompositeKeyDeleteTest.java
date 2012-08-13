@@ -96,12 +96,14 @@ public class CompositeKeyDeleteTest extends BaseCoreFunctionalTestCase {
       CustomerTwo c12 = ( CustomerTwo) s.createQuery( "select c from CustomerTwo c" ).uniqueResult();
       Assert.assertNotNull(c12);
       List<CustomerInventoryTwo> list = c12.getInventories();
+      Assert.assertNotNull(list);
+      Assert.assertEquals(2, list.size());
       CustomerInventoryTwo ci = list.get(1);
       list.remove(ci);
       s.delete(ci);
-//      s.persist(c12);
+      s.flush();
       
-      tx.commit();
+      tx.commit();//fail
       s.close();
 
    }
