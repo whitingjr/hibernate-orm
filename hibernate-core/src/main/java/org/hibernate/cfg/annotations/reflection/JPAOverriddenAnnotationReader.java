@@ -30,6 +30,7 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -333,7 +334,25 @@ public class JPAOverriddenAnnotationReader implements AnnotationReader {
 				List<Annotation> annotationList = new ArrayList<Annotation>( annotations.length + 5 );
 				annotationsMap = new HashMap<Class, Annotation>( annotations.length + 5 );
 				for ( Annotation annotation : annotations ) {
-					if ( !annotationToXml.containsKey( annotation.annotationType() ) ) {
+				   Class annotationClass = null;
+				   if (annotation instanceof Proxy){
+				      Proxy proxy = (Proxy) annotation;
+				      //TODO work out which classloader to pass as the first argument
+				      annotationClass = proxy.getProxyClass(annotation.getClass().getClassLoader(),
+				         new Class[]{Entity.class, MappedSuperclass.class, Embeddable.class, Table.class,
+				         SecondaryTable.class, SecondaryTables.class, PrimaryKeyJoinColumn.class, 
+				         PrimaryKeyJoinColumns.class, IdClass.class, Cacheable.class, 
+				         Inheritance.class, DiscriminatorValue.class, DiscriminatorColumn.class, 
+				         SequenceGenerator.class, TableGenerator.class, NamedQuery.class, NamedQueries.class, 
+				         NamedNativeQuery.class, NamedNativeQueries.class, SqlResultSetMapping.class, SqlResultSetMappings.class, ExcludeDefaultListeners.class,
+				         ExcludeSuperclassListeners.class, Access.class, AttributeOverride.class, AttributeOverrides.class, 
+				         AssociationOverride.class, AssociationOverrides.class, EntityListeners.class 
+				         });
+				   }
+				   else{
+				      annotationClass = annotation.annotationType();
+				   }
+					if ( !annotationToXml.containsKey( annotationClass ) ) {
 						//unknown annotations are left over
 						annotationList.add( annotation );
 					}

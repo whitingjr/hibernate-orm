@@ -38,7 +38,7 @@ import org.junit.Test;
 public class CompositeKeyDeleteTest extends BaseCoreFunctionalTestCase {
 
    public String[] getMappings() {
-      return new String[] { "annotations/derivedidentities/e1/b/specjmapid/lazy/hbm_order.xml" };
+      return new String[] { "annotations/derivedidentities/e1/b/specjmapid/lazy/order_orm.xml" };
    }
 
    public CompositeKeyDeleteTest() {
