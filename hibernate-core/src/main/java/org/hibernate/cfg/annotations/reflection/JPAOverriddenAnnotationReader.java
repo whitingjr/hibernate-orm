@@ -334,25 +334,7 @@ public class JPAOverriddenAnnotationReader implements AnnotationReader {
 				List<Annotation> annotationList = new ArrayList<Annotation>( annotations.length + 5 );
 				annotationsMap = new HashMap<Class, Annotation>( annotations.length + 5 );
 				for ( Annotation annotation : annotations ) {
-				   Class annotationClass = null;
-				   if (annotation instanceof Proxy){
-				      Proxy proxy = (Proxy) annotation;
-				      //TODO work out which classloader to pass as the first argument
-				      annotationClass = proxy.getProxyClass(annotation.getClass().getClassLoader(),
-				         new Class[]{Entity.class, MappedSuperclass.class, Embeddable.class, Table.class,
-				         SecondaryTable.class, SecondaryTables.class, PrimaryKeyJoinColumn.class, 
-				         PrimaryKeyJoinColumns.class, IdClass.class, Cacheable.class, 
-				         Inheritance.class, DiscriminatorValue.class, DiscriminatorColumn.class, 
-				         SequenceGenerator.class, TableGenerator.class, NamedQuery.class, NamedQueries.class, 
-				         NamedNativeQuery.class, NamedNativeQueries.class, SqlResultSetMapping.class, SqlResultSetMappings.class, ExcludeDefaultListeners.class,
-				         ExcludeSuperclassListeners.class, Access.class, AttributeOverride.class, AttributeOverrides.class, 
-				         AssociationOverride.class, AssociationOverrides.class, EntityListeners.class 
-				         });
-				   }
-				   else{
-				      annotationClass = annotation.annotationType();
-				   }
-					if ( !annotationToXml.containsKey( annotationClass ) ) {
+					if ( !annotationToXml.containsKey( annotation.annotationType() ) ) {//annotation is a $Proxy, call is invoked on handler 
 						//unknown annotations are left over
 						annotationList.add( annotation );
 					}
@@ -1093,11 +1075,21 @@ public class JPAOverriddenAnnotationReader implements AnnotationReader {
 
 	private void buildJoinColumns(List<Annotation> annotationList, Element element) {
 		JoinColumn[] joinColumns = getJoinColumns( element, false );
+		
 		if ( joinColumns.length > 0 ) {
-			AnnotationDescriptor ad = new AnnotationDescriptor( JoinColumns.class );
+		   AnnotationDescriptor ad = new AnnotationDescriptor( JoinColumns.class );
+         ad.setValue( "value", joinColumns );
+         annotationList.add( AnnotationFactory.create( ad ) );
+      }
+		/* add the correct annotation or group depending on the count 
+		if (1 == joinColumns.length ) {
+		   annotationList.add( joinColumns[0] );
+		} else if ( joinColumns.length > 1 ) {
+			ad = new AnnotationDescriptor( JoinColumns.class );
 			ad.setValue( "value", joinColumns );
 			annotationList.add( AnnotationFactory.create( ad ) );
-		}
+		}*/
+		
 	}
 
 	private void getCascades(AnnotationDescriptor ad, Element element, XMLContext.Default defaults) {
