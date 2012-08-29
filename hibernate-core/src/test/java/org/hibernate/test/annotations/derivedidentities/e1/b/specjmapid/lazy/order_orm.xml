@@ -22,7 +22,7 @@
             </many-to-one>
 
             <many-to-one name="customer" fetch="EAGER">
-                <join-column name="CI_CUSTOMERID"/>
+                <join-column name="CI_CUSTOMERID" insertable="false"/>
                 <cascade>
                     <cascade-merge/>
                 </cascade>
@@ -30,5 +30,4 @@
 
          </attributes>
       </entity>
-           
 </entity-mappings>
