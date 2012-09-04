@@ -30,7 +30,7 @@ import org.hibernate.ConnectionReleaseMode;
 import org.hibernate.TransactionException;
 import org.hibernate.engine.transaction.spi.TransactionCoordinator;
 import org.hibernate.engine.transaction.spi.TransactionFactory;
-import org.hibernate.service.jta.platform.spi.JtaPlatform;
+import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 
 /**
  * Factory for {@link JtaTransaction} instances.
@@ -40,6 +40,8 @@ import org.hibernate.service.jta.platform.spi.JtaPlatform;
  * @author Les Hazlewood
  */
 public class JtaTransactionFactory implements TransactionFactory<JtaTransaction> {
+	public static final String SHORT_NAME = "jta";
+
 	@Override
 	public JtaTransaction createTransaction(TransactionCoordinator transactionCoordinator) {
 		return new JtaTransaction( transactionCoordinator );

@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.hibernate.MappingException;
 import org.hibernate.engine.spi.CascadeStyle;
+import org.hibernate.engine.spi.CascadeStyles;
 import org.hibernate.engine.spi.ExecuteUpdateResultCheckStyle;
 import org.hibernate.internal.jaxb.mapping.hbm.CustomSqlElement;
 import org.hibernate.internal.jaxb.mapping.hbm.EntityElement;
@@ -53,8 +54,8 @@ import org.hibernate.metamodel.source.binder.ExplicitHibernateTypeSource;
 import org.hibernate.metamodel.source.binder.MetaAttributeSource;
 import org.hibernate.metamodel.source.binder.RelationalValueSource;
 import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.classloading.spi.ClassLoaderService;
-import org.hibernate.service.classloading.spi.ClassLoadingException;
+import org.hibernate.boot.registry.classloading.spi.ClassLoaderService;
+import org.hibernate.boot.registry.classloading.spi.ClassLoadingException;
 
 /**
  * @author Steve Ebersole
@@ -189,7 +190,7 @@ public class Helper {
 			cascades = bindingContext.getMappingDefaults().getCascadeStyle();
 		}
 		for ( String cascade : StringHelper.split( ",", cascades ) ) {
-			cascadeStyles.add( CascadeStyle.getCascadeStyle( cascade ) );
+			cascadeStyles.add( CascadeStyles.getCascadeStyle( cascade ) );
 		}
 		return cascadeStyles;
 	}
