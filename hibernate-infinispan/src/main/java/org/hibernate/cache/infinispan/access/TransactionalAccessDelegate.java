@@ -70,8 +70,8 @@ public class TransactionalAccessDelegate {
       if (!region.checkValid()) 
          return null;
       Object val = cache.get(key);
-      if (val == null)
-         putValidator.registerPendingPut(key);
+//      if (val == null)
+//         putValidator.registerPendingPut(key);
       return val;
    }
 
@@ -94,16 +94,16 @@ public class TransactionalAccessDelegate {
       if (minimalPutOverride && cache.containsKey(key))
          return false;
 
-      if (!putValidator.acquirePutFromLoadLock(key)) {
-         if (isTrace) log.tracef("Put from load lock not acquired for key %s", key);
-         return false;
-      }
+//      if (!putValidator.acquirePutFromLoadLock(key)) {
+//         if (isTrace) log.tracef("Put from load lock not acquired for key %s", key);
+//         return false;
+//      }
 
-      try {
+//      try {
          putFromLoadCache.putForExternalRead(key, value);
-      } finally {
-         putValidator.releasePutFromLoadLock(key);
-      }
+//      } finally {
+//         putValidator.releasePutFromLoadLock(key);
+//      }
 
       return true;
    }
@@ -148,9 +148,9 @@ public class TransactionalAccessDelegate {
    }
 
    public void remove(Object key) throws CacheException {
-      if (!putValidator.invalidateKey(key)) {
-         throw new CacheException("Failed to invalidate pending putFromLoad calls for key " + key + " from region " + region.getName());
-      }
+//      if (!putValidator.invalidateKey(key)) {
+//         throw new CacheException("Failed to invalidate pending putFromLoad calls for key " + key + " from region " + region.getName());
+//      }
       // We update whether or not the region is valid. Other nodes
       // may have already restored the region so they need to
       // be informed of the change.
@@ -158,23 +158,23 @@ public class TransactionalAccessDelegate {
    }
 
    public void removeAll() throws CacheException {
-       if (!putValidator.invalidateRegion()) {
-         throw new CacheException("Failed to invalidate pending putFromLoad calls for region " + region.getName());
-       }
+//       if (!putValidator.invalidateRegion()) {
+//         throw new CacheException("Failed to invalidate pending putFromLoad calls for region " + region.getName());
+//       }
       cache.clear();
    }
 
    public void evict(Object key) throws CacheException {
-      if (!putValidator.invalidateKey(key)) {
-         throw new CacheException("Failed to invalidate pending putFromLoad calls for key " + key + " from region " + region.getName());
-      }
+//      if (!putValidator.invalidateKey(key)) {
+//         throw new CacheException("Failed to invalidate pending putFromLoad calls for key " + key + " from region " + region.getName());
+//      }
       writeCache.remove(key);
    }
 
    public void evictAll() throws CacheException {
-      if (!putValidator.invalidateRegion()) {
-         throw new CacheException("Failed to invalidate pending putFromLoad calls for region " + region.getName());
-      }
+//      if (!putValidator.invalidateRegion()) {
+//         throw new CacheException("Failed to invalidate pending putFromLoad calls for region " + region.getName());
+//      }
       Transaction tx = region.suspend();
       try {
          region.invalidateRegion(); // Invalidate the local region and then go remote
