@@ -211,14 +211,18 @@ public class StandardQueryCache implements QueryCache {
 		if ( !LOG.isTraceEnabled() ) {
 			return;
 		}
-		LOG.trace( "key.hashCode=" + key.hashCode() );
-		LOG.trace( "querySpaces=" + querySpaces );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "key.hashCode=" + key.hashCode() );
+			LOG.trace( "querySpaces=" + querySpaces );
+		}
 		if ( returnTypes == null || returnTypes.length == 0 ) {
-			LOG.trace(
-					"Unexpected returnTypes is "
-							+ ( returnTypes == null ? "null" : "empty" ) + "! result"
-							+ ( result == null ? " is null" : ".size()=" + result.size() )
-			);
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace(
+						"Unexpected returnTypes is "
+								+ ( returnTypes == null ? "null" : "empty" ) + "! result"
+								+ ( result == null ? " is null" : ".size()=" + result.size() )
+				);
+			}
 		}
 		else {
 			StringBuilder returnTypeInfo = new StringBuilder();
@@ -228,7 +232,9 @@ public class StandardQueryCache implements QueryCache {
 						.append( " class=" )
 						.append( returnTypes[i].getReturnedClass().getName() ).append( ' ' );
 			}
-			LOG.trace( "unexpected returnTypes is " + returnTypeInfo.toString() + "! result" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "unexpected returnTypes is " + returnTypeInfo.toString() + "! result" );
+			}
 		}
 	}
 
@@ -247,37 +253,51 @@ public class StandardQueryCache implements QueryCache {
 			return;
 		}
 		if ( tuple == null ) {
-			LOG.trace( " tuple is null; returnTypes is " + returnTypes == null ? "null" : "Type[" + returnTypes.length + "]" );
-			if ( returnTypes != null && returnTypes.length > 1 ) {
-				LOG.trace(
-						"Unexpected result tuple! tuple is null; should be Object["
-								+ returnTypes.length + "]!"
-				);
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( " tuple is null; returnTypes is " + returnTypes == null ? "null" : "Type[" + returnTypes.length + "]" );
 			}
+			if ( returnTypes != null && returnTypes.length > 1 ) {
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace(
+							"Unexpected result tuple! tuple is null; should be Object["
+									+ returnTypes.length + "]!"
+					);
+				}
+			}
+			
+			
 		}
 		else {
 			if ( returnTypes == null || returnTypes.length == 0 ) {
-				LOG.trace(
-						"Unexpected result tuple! tuple is null; returnTypes is "
-								+ ( returnTypes == null ? "null" : "empty" )
-				);
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace(
+							"Unexpected result tuple! tuple is null; returnTypes is "
+									+ ( returnTypes == null ? "null" : "empty" )
+					);
+				}
 			}
-			LOG.trace( " tuple is Object[" + tuple.length + "]; returnTypes is Type[" + returnTypes.length + "]" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( " tuple is Object[" + tuple.length + "]; returnTypes is Type[" + returnTypes.length + "]" );
+			}
 			if ( tuple.length != returnTypes.length ) {
-				LOG.trace(
-						"Unexpected tuple length! transformer= expected="
-								+ returnTypes.length + " got=" + tuple.length
-				);
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace(
+							"Unexpected tuple length! transformer= expected="
+									+ returnTypes.length + " got=" + tuple.length
+					);
+				}
 			}
 			else {
 				for ( int j = 0; j < tuple.length; j++ ) {
 					if ( tuple[j] != null && !returnTypes[j].getReturnedClass().isInstance( tuple[j] ) ) {
-						LOG.trace(
-								"Unexpected tuple value type! transformer= expected="
-										+ returnTypes[j].getReturnedClass().getName()
-										+ " got="
-										+ tuple[j].getClass().getName()
-						);
+						if ( LOG.isTraceEnabled() ) {
+							LOG.trace(
+									"Unexpected tuple value type! transformer= expected="
+											+ returnTypes[j].getReturnedClass().getName()
+											+ " got="
+											+ tuple[j].getClass().getName()
+							);
+						}
 					}
 				}
 			}

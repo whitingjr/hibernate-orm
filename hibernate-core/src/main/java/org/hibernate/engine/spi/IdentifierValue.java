@@ -49,7 +49,9 @@ public class IdentifierValue implements UnsavedValueStrategy {
 	public static final IdentifierValue ANY = new IdentifierValue() {
 		@Override
 		public final Boolean isUnsaved(Object id) {
-			LOG.trace( "ID unsaved-value strategy ANY" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "ID unsaved-value strategy ANY" );
+			}
 			return Boolean.TRUE;
 		}
 		@Override
@@ -68,7 +70,9 @@ public class IdentifierValue implements UnsavedValueStrategy {
 	public static final IdentifierValue NONE = new IdentifierValue() {
 		@Override
 		public final Boolean isUnsaved(Object id) {
-			LOG.trace( "ID unsaved-value strategy NONE" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "ID unsaved-value strategy NONE" );
+			}
 			return Boolean.FALSE;
 		}
 		@Override
@@ -88,7 +92,9 @@ public class IdentifierValue implements UnsavedValueStrategy {
 	public static final IdentifierValue NULL = new IdentifierValue() {
 		@Override
 		public final Boolean isUnsaved(Object id) {
-			LOG.trace( "ID unsaved-value strategy NULL" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "ID unsaved-value strategy NULL" );
+			}
 			return id==null;
 		}
 		@Override
@@ -107,7 +113,9 @@ public class IdentifierValue implements UnsavedValueStrategy {
 	public static final IdentifierValue UNDEFINED = new IdentifierValue() {
 		@Override
 		public final Boolean isUnsaved(Object id) {
-			LOG.trace( "ID unsaved-value strategy UNDEFINED" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "ID unsaved-value strategy UNDEFINED" );
+			}
 			return null;
 		}
 		@Override
@@ -136,7 +144,9 @@ public class IdentifierValue implements UnsavedValueStrategy {
 	 * Does the given identifier belong to a new instance?
 	 */
 	public Boolean isUnsaved(Object id) {
-		LOG.tracev( "ID unsaved-value: {0}", value );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "ID unsaved-value: {0}", value );
+		}
 		return id==null || id.equals(value);
 	}
 

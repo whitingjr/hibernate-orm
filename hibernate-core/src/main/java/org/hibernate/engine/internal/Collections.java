@@ -251,7 +251,9 @@ public final class Collections {
 				if ( loadedPersister != null ) {
 					entry.setDoremove( true );		// we will need to remove ye olde entries
 					if ( entry.isDorecreate() ) {
-						LOG.trace( "Forcing collection initialization" );
+						if ( LOG.isTraceEnabled() ) {
+							LOG.trace( "Forcing collection initialization" );
+						}
 						collection.forceInitialization();
 					}
 				}

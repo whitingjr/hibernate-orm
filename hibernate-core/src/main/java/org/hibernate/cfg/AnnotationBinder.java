@@ -1015,20 +1015,28 @@ public final class AnnotationBinder {
 
 	static void prepareDefaultCacheConcurrencyStrategy(Properties properties) {
 		if ( DEFAULT_CACHE_CONCURRENCY_STRATEGY != null ) {
-			LOG.trace( "Default cache concurrency strategy already defined" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Default cache concurrency strategy already defined" );
+			}
 			return;
 		}
 
 		if ( !properties.containsKey( AvailableSettings.DEFAULT_CACHE_CONCURRENCY_STRATEGY ) ) {
-			LOG.trace( "Given properties did not contain any default cache concurrency strategy setting" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Given properties did not contain any default cache concurrency strategy setting" );
+			}
 			return;
 		}
 
 		final String strategyName = properties.getProperty( AvailableSettings.DEFAULT_CACHE_CONCURRENCY_STRATEGY );
-		LOG.tracev( "Discovered default cache concurrency strategy via config [{0}]", strategyName );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Discovered default cache concurrency strategy via config [{0}]", strategyName );
+		}
 		CacheConcurrencyStrategy strategy = CacheConcurrencyStrategy.parse( strategyName );
 		if ( strategy == null ) {
-			LOG.trace( "Discovered default cache concurrency strategy specified nothing" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Discovered default cache concurrency strategy specified nothing" );
+			}
 			return;
 		}
 
@@ -1127,7 +1135,9 @@ public final class AnnotationBinder {
 						( Map<String, Join> ) null, ( PropertyHolder ) null, mappings
 				);
 			}
-			LOG.trace( "Subclass joined column(s) created" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Subclass joined column(s) created" );
+			}
 		}
 		else {
 			if ( clazzToProcess.isAnnotationPresent( PrimaryKeyJoinColumns.class )
@@ -2335,7 +2345,9 @@ public final class AnnotationBinder {
 		 */
 		Component comp = createComponent( propertyHolder, inferredData, isComponentEmbedded, isIdentifierMapper, mappings );
 		String subpath = BinderHelper.getPath( propertyHolder, inferredData );
-		LOG.tracev( "Binding component with path: {0}", subpath );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Binding component with path: {0}", subpath );
+		}
 		PropertyHolder subHolder = PropertyHolderBuilder.buildPropertyHolder(
 				comp, subpath,
 				inferredData, propertyHolder, mappings
@@ -2768,7 +2780,9 @@ public final class AnnotationBinder {
 			Mappings mappings) {
 		//column.getTable() => persistentClass.getTable()
 		final String propertyName = inferredData.getPropertyName();
-		LOG.tracev( "Fetching {0} with {1}", propertyName, fetchMode );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Fetching {0} with {1}", propertyName, fetchMode );
+		}
 		boolean mapToPK = true;
 		if ( !trueOneToOne ) {
 			//try to find a hidden true one to one (FK == PK columns)

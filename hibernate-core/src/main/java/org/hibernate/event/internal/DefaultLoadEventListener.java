@@ -279,7 +279,9 @@ public class DefaultLoadEventListener extends AbstractLockUpgradeEventListener i
 			final LoadEventListener.LoadType options,
 			final PersistenceContext persistenceContext,
 			final Object proxy) {
-		LOG.trace( "Entity proxy found in session cache" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Entity proxy found in session cache" );
+		}
 		LazyInitializer li = ( (HibernateProxy) proxy ).getHibernateLazyInitializer();
 		if ( li.isUnwrap() ) {
 			return li.getImplementation();
@@ -315,7 +317,9 @@ public class DefaultLoadEventListener extends AbstractLockUpgradeEventListener i
 		Object existing = persistenceContext.getEntity( keyToLoad );
 		if ( existing != null ) {
 			// return existing object or initialized proxy (unless deleted)
-			LOG.trace( "Entity found in session cache" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Entity found in session cache" );
+			}
 			if ( options.isCheckDeleted() ) {
 				EntityEntry entry = persistenceContext.getEntry( existing );
 				Status status = entry.getStatus();
@@ -325,7 +329,9 @@ public class DefaultLoadEventListener extends AbstractLockUpgradeEventListener i
 			}
 			return existing;
 		}
-		LOG.trace( "Creating new proxy for entity" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Creating new proxy for entity" );
+		}
 		// return new uninitialized proxy
 		Object proxy = persister.createProxy( event.getEntityId(), event.getSession() );
 		persistenceContext.getBatchFetchQueue().addBatchLoadableEntityKey( keyToLoad );
@@ -615,7 +621,9 @@ public class DefaultLoadEventListener extends AbstractLockUpgradeEventListener i
 		);
 
 		Object version = Versioning.getVersion( values, subclassPersister );
-		LOG.tracev( "Cached Version: {0}", version );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Cached Version: {0}", version );
+		}
 
 		final PersistenceContext persistenceContext = session.getPersistenceContext();
 		boolean isReadOnly = session.isDefaultReadOnly();

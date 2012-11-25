@@ -66,7 +66,7 @@ import org.hibernate.metamodel.source.annotations.AnnotationMetadataSourceProces
 import org.hibernate.metamodel.source.hbm.HbmMetadataSourceProcessorImpl;
 import org.hibernate.persister.spi.PersisterClassResolver;
 import org.hibernate.service.ServiceRegistry;
-import org.hibernate.boot.registry.classloading.spi.ClassLoaderService;
+import org.hibernate.service.classloading.spi.ClassLoaderService;
 import org.hibernate.type.TypeResolver;
 
 /**
@@ -435,10 +435,14 @@ public class MetadataImpl implements MetadataImplementor, Serializable {
 		if ( importName == null || entityName == null ) {
 			throw new IllegalArgumentException( "Import name or entity name is null" );
 		}
-		LOG.tracev( "Import: {0} -> {1}", importName, entityName );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Import: {0} -> {1}", importName, entityName );
+		}
 		String old = imports.put( importName, entityName );
 		if ( old != null ) {
-			LOG.debug( "import name [" + importName + "] overrode previous [{" + old + "}]" );
+			if ( LOG.isDebugEnabled() ) {
+				LOG.debug( "import name [" + importName + "] overrode previous [{" + old + "}]" );
+			}
 		}
 	}
 

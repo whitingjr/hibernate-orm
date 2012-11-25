@@ -233,14 +233,18 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
 	public InputStream locateResourceStream(String name) {
 		// first we try name as a URL
 		try {
-			log.tracef( "trying via [new URL(\"%s\")]", name );
+			if ( log.isTraceEnabled() ) {
+				log.tracef( "trying via [new URL(\"%s\")]", name );
+			}
 			return new URL( name ).openStream();
 		}
 		catch ( Exception ignore ) {
 		}
 
 		try {
-			log.tracef( "trying via [ClassLoader.getResourceAsStream(\"%s\")]", name );
+			if ( log.isTraceEnabled() ) {
+				log.tracef( "trying via [ClassLoader.getResourceAsStream(\"%s\")]", name );
+			}
 			InputStream stream =  resourcesClassLoader.getResourceAsStream( name );
 			if ( stream != null ) {
 				return stream;
@@ -253,14 +257,18 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
 
 		if ( stripped != null ) {
 			try {
-				log.tracef( "trying via [new URL(\"%s\")]", stripped );
+				if ( log.isTraceEnabled() ) {
+					log.tracef( "trying via [new URL(\"%s\")]", stripped );
+				}
 				return new URL( stripped ).openStream();
 			}
 			catch ( Exception ignore ) {
 			}
 
 			try {
-				log.tracef( "trying via [ClassLoader.getResourceAsStream(\"%s\")]", stripped );
+				if ( log.isTraceEnabled() ) {
+					log.tracef( "trying via [ClassLoader.getResourceAsStream(\"%s\")]", stripped );
+				}
 				InputStream stream = resourcesClassLoader.getResourceAsStream( stripped );
 				if ( stream != null ) {
 					return stream;

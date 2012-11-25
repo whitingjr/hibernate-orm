@@ -31,7 +31,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -48,7 +47,6 @@ import org.hibernate.LockOptions;
 import org.hibernate.QueryException;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
-import org.hibernate.Session;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.WrongClassException;
 import org.hibernate.cache.spi.FilterKey;
@@ -61,7 +59,6 @@ import org.hibernate.dialect.pagination.LimitHelper;
 import org.hibernate.dialect.pagination.NoopLimitHandler;
 import org.hibernate.engine.internal.TwoPhaseLoad;
 import org.hibernate.engine.jdbc.ColumnNameCache;
-import org.hibernate.engine.spi.EntityEntry;
 import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.engine.spi.EntityUniqueKey;
 import org.hibernate.engine.spi.PersistenceContext;
@@ -122,7 +119,7 @@ public abstract class Loader {
 	 *
 	 * @return The sql command this loader should use to get its {@link ResultSet}.
 	 */
-	public abstract String getSQLString();
+	protected abstract String getSQLString();
 
 	/**
 	 * An array of persisters of entity classes contained in each row of results;
@@ -198,11 +195,7 @@ public abstract class Loader {
 	 * empty superclass implementation merely returns its first
 	 * argument.
 	 */
-	protected String applyLocks(
-			String sql,
-			QueryParameters parameters,
-			Dialect dialect,
-			List<AfterLoadAction> afterLoadActions) throws HibernateException {
+	protected String applyLocks(String sql, LockOptions lockOptions, Dialect dialect) throws HibernateException {
 		return sql;
 	}
 
@@ -234,48 +227,13 @@ public abstract class Loader {
 	/**
 	 * Modify the SQL, adding lock hints and comments, if necessary
 	 */
-	protected String preprocessSQL(
-			String sql,
-			QueryParameters parameters,
-			Dialect dialect,
-			List<AfterLoadAction> afterLoadActions) throws HibernateException {
-		sql = applyLocks( sql, parameters, dialect, afterLoadActions );
-		return getFactory().getSettings().isCommentsEnabled()
-				? prependComment( sql, parameters )
-				: sql;
-	}
+	protected String preprocessSQL(String sql, QueryParameters parameters, Dialect dialect)
+			throws HibernateException {
 
-	protected static interface AfterLoadAction {
-		public void afterLoad(SessionImplementor session, Object entity, Loadable persister);
-	}
+		sql = applyLocks( sql, parameters.getLockOptions(), dialect );
 
-	protected boolean shouldDelayLockingDueToPaging(
-			String sql,
-			QueryParameters parameters,
-			Dialect dialect,
-			List<AfterLoadAction> afterLoadActions) {
-		final LockOptions lockOptions = parameters.getLockOptions();
-		final RowSelection rowSelection = parameters.getRowSelection();
-		final LimitHandler limitHandler = dialect.buildLimitHandler( sql, rowSelection );
-		if ( LimitHelper.useLimit( limitHandler, rowSelection ) ) {
-			// user has requested a combination of paging and locking.  See if the dialect supports that
-			// (ahem, Oracle...)
-			if ( ! dialect.supportsLockingAndPaging() ) {
-				LOG.delayedLockingDueToPaging();
-				afterLoadActions.add(
-						new AfterLoadAction() {
-							private final LockOptions originalLockOptions = lockOptions.makeCopy();
-							@Override
-							public void afterLoad(SessionImplementor session, Object entity, Loadable persister) {
-								( (Session) session ).buildLockRequest( originalLockOptions ).lock( persister.getEntityName(), entity );
-							}
-						}
-				);
-				parameters.setLockOptions( new LockOptions() );
-			}
-			return true;
-		}
-		return false;
+		return getFactory().getSettings().isCommentsEnabled() ?
+				prependComment( sql, parameters ) : sql;
 	}
 
 	private String prependComment(String sql, QueryParameters parameters) {
@@ -298,7 +256,7 @@ public abstract class Loader {
 	 * persister from each row of the <tt>ResultSet</tt>. If an object is supplied, will attempt to
 	 * initialize that object. If a collection is supplied, attempt to initialize that collection.
 	 */
-	public List doQueryAndInitializeNonLazyCollections(
+	private List doQueryAndInitializeNonLazyCollections(
 			final SessionImplementor session,
 			final QueryParameters queryParameters,
 			final boolean returnProxies) throws HibernateException, SQLException {
@@ -310,7 +268,7 @@ public abstract class Loader {
 		);
 	}
 
-	public List doQueryAndInitializeNonLazyCollections(
+	private List doQueryAndInitializeNonLazyCollections(
 			final SessionImplementor session,
 			final QueryParameters queryParameters,
 			final boolean returnProxies,
@@ -393,7 +351,7 @@ public abstract class Loader {
 				resultSet,
 				session,
 				queryParameters.isReadOnly( session )
-		);
+			);
 		session.getPersistenceContext().initializeNonLazyCollections();
 		return result;
 	}
@@ -452,7 +410,7 @@ public abstract class Loader {
 				resultSet,
 				session,
 				queryParameters.isReadOnly( session )
-		);
+			);
 		session.getPersistenceContext().initializeNonLazyCollections();
 		return result;
 	}
@@ -731,9 +689,12 @@ public abstract class Loader {
 
 		applyPostLoadLocks( row, lockModesArray, session );
 
-		return forcedResultTransformer == null
-				? getResultColumnOrRow( row, queryParameters.getResultTransformer(), resultSet, session )
-				: forcedResultTransformer.transformTuple( getResultRow( row, resultSet, session ), getResultRowAliases() )
+		return forcedResultTransformer == null ?
+				getResultColumnOrRow( row, queryParameters.getResultTransformer(), resultSet, session ) :
+				forcedResultTransformer.transformTuple(
+						getResultRow( row, resultSet, session ),
+						getResultRowAliases()
+				)
 		;
 	}
 
@@ -885,10 +846,11 @@ public abstract class Loader {
 				selection.getMaxRows() :
 				Integer.MAX_VALUE;
 
-		final List<AfterLoadAction> afterLoadActions = new ArrayList<AfterLoadAction>();
+		final int entitySpan = getEntityPersisters().length;
 
-		final ResultSet rs = executeQueryStatement( queryParameters, false, afterLoadActions, session );
-		final Statement st = rs.getStatement();
+		final ArrayList hydratedObjects = entitySpan == 0 ? null : new ArrayList( entitySpan * 10 );
+		final ResultSet rs = executeQueryStatement( queryParameters, false, session );
+		final Statement st =  rs.getStatement();
 
 // would be great to move all this below here into another method that could also be used
 // from the new scrolling stuff.
@@ -896,68 +858,51 @@ public abstract class Loader {
 // Would need to change the way the max-row stuff is handled (i.e. behind an interface) so
 // that I could do the control breaking at the means to know when to stop
 
-		try {
-			return processResultSet( rs, queryParameters, session, returnProxies, forcedResultTransformer, maxRows, afterLoadActions );
-		}
-		finally {
-			st.close();
-		}
-
-	}
-
-	protected List processResultSet(
-			ResultSet rs,
-			QueryParameters queryParameters,
-			SessionImplementor session,
-			boolean returnProxies,
-			ResultTransformer forcedResultTransformer,
-			int maxRows,
-			List<AfterLoadAction> afterLoadActions) throws SQLException {
-		final int entitySpan = getEntityPersisters().length;
 		final EntityKey optionalObjectKey = getOptionalObjectKey( queryParameters, session );
 		final LockMode[] lockModesArray = getLockModes( queryParameters.getLockOptions() );
 		final boolean createSubselects = isSubselectLoadingEnabled();
 		final List subselectResultKeys = createSubselects ? new ArrayList() : null;
-		final ArrayList hydratedObjects = entitySpan == 0 ? null : new ArrayList( entitySpan * 10 );
 		final List results = new ArrayList();
 
-		handleEmptyCollections( queryParameters.getCollectionKeys(), rs, session );
-		EntityKey[] keys = new EntityKey[entitySpan]; //we can reuse it for each row
-		LOG.trace( "Processing result set" );
-		int count;
-		for ( count = 0; count < maxRows && rs.next(); count++ ) {
-			LOG.debugf( "Result set row: %s", count );
-			Object result = getRowFromResultSet(
-					rs,
-					session,
-					queryParameters,
-					lockModesArray,
-					optionalObjectKey,
-					hydratedObjects,
-					keys,
-					returnProxies,
-					forcedResultTransformer
-			);
-			results.add( result );
-			if ( createSubselects ) {
-				subselectResultKeys.add(keys);
-				keys = new EntityKey[entitySpan]; //can't reuse in this case
+		try {
+			handleEmptyCollections( queryParameters.getCollectionKeys(), rs, session );
+			EntityKey[] keys = new EntityKey[entitySpan]; //we can reuse it for each row
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Processing result set" );
 			}
-		}
+			int count;
+			for ( count = 0; count < maxRows && rs.next(); count++ ) {
+				LOG.debugf( "Result set row: %s", count );
+				Object result = getRowFromResultSet(
+						rs,
+						session,
+						queryParameters,
+						lockModesArray,
+						optionalObjectKey,
+						hydratedObjects,
+						keys,
+						returnProxies,
+						forcedResultTransformer
+				);
+				results.add( result );
+				if ( createSubselects ) {
+					subselectResultKeys.add(keys);
+					keys = new EntityKey[entitySpan]; //can't reuse in this case
+				}
+			}
 
-		LOG.tracev( "Done processing result set ({0} rows)", count );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Done processing result set ({0} rows)", count );
+			}
 
-		initializeEntitiesAndCollections(
-				hydratedObjects,
-				rs,
-				session,
-				queryParameters.isReadOnly( session ),
-				afterLoadActions
-		);
-		if ( createSubselects ) {
-			createSubselects( subselectResultKeys, queryParameters, session );
 		}
+		finally {
+			st.close();
+		}
+		initializeEntitiesAndCollections( hydratedObjects, rs, session, queryParameters.isReadOnly( session ) );
+		if ( createSubselects ) createSubselects( subselectResultKeys, queryParameters, session );
 		return results;
+
 	}
 
 	protected boolean isSubselectLoadingEnabled() {
@@ -1042,22 +987,8 @@ public abstract class Loader {
 			final List hydratedObjects,
 			final Object resultSetId,
 			final SessionImplementor session,
-			final boolean readOnly) throws HibernateException {
-		initializeEntitiesAndCollections(
-				hydratedObjects,
-				resultSetId,
-				session,
-				readOnly,
-				Collections.<AfterLoadAction>emptyList()
-		);
-	}
-
-	private void initializeEntitiesAndCollections(
-			final List hydratedObjects,
-			final Object resultSetId,
-			final SessionImplementor session,
-			final boolean readOnly,
-			List<AfterLoadAction> afterLoadActions) throws HibernateException {
+			final boolean readOnly)
+	throws HibernateException {
 
 		final CollectionPersister[] collectionPersisters = getCollectionPersisters();
 		if ( collectionPersisters != null ) {
@@ -1087,7 +1018,9 @@ public abstract class Loader {
 
 		if ( hydratedObjects!=null ) {
 			int hydratedObjectsSize = hydratedObjects.size();
-			LOG.tracev( "Total objects hydrated: {0}", hydratedObjectsSize );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Total objects hydrated: {0}", hydratedObjectsSize );
+			}
 			for ( int i = 0; i < hydratedObjectsSize; i++ ) {
 				TwoPhaseLoad.initializeEntity( hydratedObjects.get(i), readOnly, session, pre, post );
 			}
@@ -1109,19 +1042,9 @@ public abstract class Loader {
 		// split off from initializeEntity.  It *must* occur after
 		// endCollectionLoad to ensure the collection is in the
 		// persistence context.
-		if ( hydratedObjects != null ) {
+		if ( hydratedObjects!=null ) {
 			for ( Object hydratedObject : hydratedObjects ) {
 				TwoPhaseLoad.postLoad( hydratedObject, session, post );
-				if ( afterLoadActions != null ) {
-					for ( AfterLoadAction afterLoadAction : afterLoadActions ) {
-						final EntityEntry entityEntry = session.getPersistenceContext().getEntry( hydratedObject );
-						if ( entityEntry == null ) {
-							// big problem
-							throw new HibernateException( "Could not locate EntityEntry immediately after two-phase load" );
-						}
-						afterLoadAction.afterLoad( session, hydratedObject, (Loadable) entityEntry.getPersister() );
-					}
-				}
 			}
 		}
 	}
@@ -1173,11 +1096,8 @@ public abstract class Loader {
 	 * This empty implementation merely returns its first argument. This is
 	 * overridden by some subclasses.
 	 */
-	protected Object getResultColumnOrRow(
-			Object[] row,
-			ResultTransformer transformer,
-			ResultSet rs,
-			SessionImplementor session) throws SQLException, HibernateException {
+	protected Object getResultColumnOrRow(Object[] row, ResultTransformer transformer, ResultSet rs, SessionImplementor session)
+			throws SQLException, HibernateException {
 		return row;
 	}
 
@@ -1185,10 +1105,10 @@ public abstract class Loader {
 		return null;
 	}
 
-	protected Object[] getResultRow(
-			Object[] row,
-			ResultSet rs,
-			SessionImplementor session) throws SQLException, HibernateException {
+	protected Object[] getResultRow(Object[] row,
+														 ResultSet rs,
+														 SessionImplementor session)
+			throws SQLException, HibernateException {
 		return row;
 	}
 
@@ -1571,7 +1491,7 @@ public abstract class Loader {
 				persister,
 				key.getIdentifier(),
 				session
-		);
+			);
 
 		final Object object;
 		if ( optionalObjectKey != null && key.equals( optionalObjectKey ) ) {
@@ -1798,30 +1718,16 @@ public abstract class Loader {
 	protected ResultSet executeQueryStatement(
 			final QueryParameters queryParameters,
 			final boolean scroll,
-			List<AfterLoadAction> afterLoadActions,
 			final SessionImplementor session) throws SQLException {
-		return executeQueryStatement( getSQLString(), queryParameters, scroll, afterLoadActions, session );
-	}
-
-	protected ResultSet executeQueryStatement(
-			String sqlStatement,
-			QueryParameters queryParameters,
-			boolean scroll,
-			List<AfterLoadAction> afterLoadActions,
-			SessionImplementor session) throws SQLException {
-
 		// Processing query filters.
-		queryParameters.processFilters( sqlStatement, session );
+		queryParameters.processFilters( getSQLString(), session );
 
 		// Applying LIMIT clause.
-		final LimitHandler limitHandler = getLimitHandler(
-				queryParameters.getFilteredSQL(),
-				queryParameters.getRowSelection()
-		);
+		final LimitHandler limitHandler = getLimitHandler( queryParameters.getFilteredSQL(), queryParameters.getRowSelection() );
 		String sql = limitHandler.getProcessedSql();
 
 		// Adding locks and comments.
-		sql = preprocessSQL( sql, queryParameters, getFactory().getDialect(), afterLoadActions );
+		sql = preprocessSQL( sql, queryParameters, getFactory().getDialect() );
 
 		final PreparedStatement st = prepareQueryStatement( sql, queryParameters, limitHandler, scroll, session );
 		return getResultSet( st, queryParameters.getRowSelection(), limitHandler, queryParameters.hasAutoDiscoverScalarTypes(), session );
@@ -1895,7 +1801,9 @@ public abstract class Loader {
 				}
 			}
 
-			LOG.tracev( "Bound [{0}] parameters total", col );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Bound [{0}] parameters total", col );
+			}
 		}
 		catch ( SQLException sqle ) {
 			st.close();
@@ -2068,7 +1976,9 @@ public abstract class Loader {
 
 	private ColumnNameCache retreiveColumnNameToIndexCache(ResultSet rs) throws SQLException {
 		if ( columnNameCache == null ) {
-			LOG.trace( "Building columnName->columnIndex cache" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Building columnName->columnIndex cache" );
+			}
 			columnNameCache = new ColumnNameCache( rs.getMetaData().getColumnCount() );
 		}
 
@@ -2338,9 +2248,13 @@ public abstract class Loader {
 		QueryKey key = generateQueryKey( session, queryParameters );
 
 		if ( querySpaces == null || querySpaces.size() == 0 )
-			LOG.tracev( "Unexpected querySpaces is {0}", ( querySpaces == null ? querySpaces : "empty" ) );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Unexpected querySpaces is {0}", ( querySpaces == null ? querySpaces : "empty" ) );
+			}
 		else {
-			LOG.tracev( "querySpaces is {0}", querySpaces );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "querySpaces is {0}", querySpaces );
+			}
 		}
 
 		List result = getResultFromQueryCache(
@@ -2578,7 +2492,7 @@ public abstract class Loader {
 		if ( stats ) startTime = System.currentTimeMillis();
 
 		try {
-			final ResultSet rs = executeQueryStatement( queryParameters, true, Collections.<AfterLoadAction>emptyList(), session );
+			final ResultSet rs = executeQueryStatement( queryParameters, true, session );
 			final PreparedStatement st = (PreparedStatement) rs.getStatement();
 
 			if ( stats ) {

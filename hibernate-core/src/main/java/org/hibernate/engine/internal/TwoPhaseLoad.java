@@ -105,7 +105,9 @@ public final class TwoPhaseLoad {
 			String versionStr = persister.isVersioned()
 					? persister.getVersionType().toLoggableString( version, session.getFactory() )
 					: "null";
-			LOG.tracev( "Version: {0}", versionStr );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Version: {0}", versionStr );
+			}
 		}
 
 	}

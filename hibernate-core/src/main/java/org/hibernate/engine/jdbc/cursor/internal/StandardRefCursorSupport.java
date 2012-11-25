@@ -168,7 +168,9 @@ public class StandardRefCursorSupport implements RefCursorSupport {
 			return ( (Boolean) meta.getClass().getMethod( "supportsRefCursors" ).invoke( null ) ).booleanValue();
 		}
 		catch (NoSuchMethodException e) {
-			log.trace( "JDBC DatabaseMetaData class does not define supportsRefCursors method..." );
+			if ( LOG.isTraceEnabled() ) {
+				log.trace( "JDBC DatabaseMetaData class does not define supportsRefCursors method..." );
+			}
 		}
 		catch (Exception e) {
 			log.debug( "Unexpected error trying to gauge level of JDBC REF_CURSOR support : " + e.getMessage() );

@@ -234,9 +234,11 @@ public class LiteralProcessor implements HqlSqlTokenTypes {
 					return Integer.valueOf( text ).toString();
 				}
 				catch( NumberFormatException e ) {
-					LOG.tracev(
+					if ( LOG.isTraceEnabled() ) {
+						LOG.tracev(	
 							"Could not format incoming text [{0}] as a NUM_INT; assuming numeric overflow and attempting as NUM_LONG",
 							text );
+					}
 				}
 			}
 			String literalValue = text;

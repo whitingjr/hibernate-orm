@@ -44,6 +44,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
 import org.hibernate.MappingException;
+import org.hibernate.PropertyAccessException;
 import org.hibernate.QueryException;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.StaleStateException;
@@ -64,8 +65,7 @@ import org.hibernate.engine.internal.Versioning;
 import org.hibernate.engine.jdbc.batch.internal.BasicBatchKey;
 import org.hibernate.engine.spi.CachedNaturalIdValueSource;
 import org.hibernate.engine.spi.CascadeStyle;
-import org.hibernate.engine.spi.CascadeStyles;
-import org.hibernate.engine.spi.CascadingActions;
+import org.hibernate.engine.spi.CascadingAction;
 import org.hibernate.engine.spi.EntityEntry;
 import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.engine.spi.ExecuteUpdateResultCheckStyle;
@@ -90,7 +90,6 @@ import org.hibernate.jdbc.Expectation;
 import org.hibernate.jdbc.Expectations;
 import org.hibernate.jdbc.TooManyRowsAffectedException;
 import org.hibernate.loader.entity.BatchingEntityLoader;
-import org.hibernate.loader.entity.BatchingEntityLoaderBuilder;
 import org.hibernate.loader.entity.CascadeEntityLoader;
 import org.hibernate.loader.entity.EntityLoader;
 import org.hibernate.loader.entity.UniqueEntityLoader;
@@ -1063,7 +1062,7 @@ public abstract class AbstractEntityPersister
 				joinedFetchesList.add( associationAttributeBinding.getFetchMode() );
 			}
 			else {
-				cascades.add( CascadeStyles.NONE );
+				cascades.add( CascadeStyle.NONE );
 				joinedFetchesList.add( FetchMode.SELECT );
 			}
 		}
@@ -1207,7 +1206,9 @@ public abstract class AbstractEntityPersister
 
 		if ( !hasLazyProperties() ) throw new AssertionFailure( "no lazy properties" );
 
-		LOG.trace( "Initializing lazy properties from datastore" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Initializing lazy properties from datastore" );
+		}
 
 		try {
 
@@ -1249,7 +1250,9 @@ public abstract class AbstractEntityPersister
 				}
 			}
 
-			LOG.trace( "Done initializing lazy properties" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Done initializing lazy properties" );
+			}
 
 			return result;
 
@@ -1272,7 +1275,9 @@ public abstract class AbstractEntityPersister
 			final CacheEntry cacheEntry
 	) {
 
-		LOG.trace( "Initializing lazy properties from second-level cache" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Initializing lazy properties from second-level cache" );
+		}
 
 		Object result = null;
 		Serializable[] disassembledValues = cacheEntry.getDisassembledState();
@@ -1288,7 +1293,9 @@ public abstract class AbstractEntityPersister
 			}
 		}
 
-		LOG.trace( "Done initializing lazy properties" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Done initializing lazy properties" );
+		}
 
 		return result;
 	}
@@ -2441,16 +2448,26 @@ public abstract class AbstractEntityPersister
 			LockMode lockMode,
 			LoadQueryInfluencers loadQueryInfluencers) throws MappingException {
 		//TODO: disable batch loading if lockMode > READ?
-		return BatchingEntityLoaderBuilder.getBuilder( getFactory() )
-				.buildLoader( this, batchSize, lockMode, getFactory(), loadQueryInfluencers );
+		return BatchingEntityLoader.createBatchingEntityLoader(
+				this,
+				batchSize,
+				lockMode,
+				getFactory(),
+				loadQueryInfluencers
+		);
 	}
 
 	protected UniqueEntityLoader createEntityLoader(
 			LockOptions lockOptions,
 			LoadQueryInfluencers loadQueryInfluencers) throws MappingException {
 		//TODO: disable batch loading if lockMode > READ?
-		return BatchingEntityLoaderBuilder.getBuilder( getFactory() )
-				.buildLoader( this, batchSize, lockOptions, getFactory(), loadQueryInfluencers );
+		return BatchingEntityLoader.createBatchingEntityLoader(
+				this,
+				batchSize,
+			lockOptions,
+				getFactory(),
+				loadQueryInfluencers
+		);
 	}
 
 	protected UniqueEntityLoader createEntityLoader(LockMode lockMode) throws MappingException {
@@ -3841,11 +3858,11 @@ public abstract class AbstractEntityPersister
 
 		loaders.put(
 				"merge",
-				new CascadeEntityLoader( this, CascadingActions.MERGE, getFactory() )
+				new CascadeEntityLoader( this, CascadingAction.MERGE, getFactory() )
 			);
 		loaders.put(
 				"refresh",
-				new CascadeEntityLoader( this, CascadingActions.REFRESH, getFactory() )
+				new CascadeEntityLoader( this, CascadingAction.REFRESH, getFactory() )
 			);
 	}
 
@@ -4045,7 +4062,9 @@ public abstract class AbstractEntityPersister
 		if ( LOG.isTraceEnabled() ) {
 			for ( int i = 0; i < props.length; i++ ) {
 				String propertyName = entityMetamodel.getProperties()[ props[i] ].getName();
-				LOG.trace( StringHelper.qualify( getEntityName(), propertyName ) + " is dirty" );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace( StringHelper.qualify( getEntityName(), propertyName ) + " is dirty" );
+				}
 			}
 		}
 	}

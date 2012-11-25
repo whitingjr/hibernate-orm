@@ -65,7 +65,9 @@ public class BatchBuilderImpl implements BatchBuilder, Configurable {
 
 	@Override
 	public Batch buildBatch(BatchKey key, JdbcCoordinator jdbcCoordinator) {
-		LOG.tracef( "Building batch [size=%s]", size );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracef( "Building batch [size=%s]", size );
+		}
 		return size > 1
 				? new BatchingBatch( key, jdbcCoordinator, size )
 				: new NonBatchingBatch( key, jdbcCoordinator );

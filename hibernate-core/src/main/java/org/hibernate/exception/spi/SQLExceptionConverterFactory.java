@@ -73,7 +73,9 @@ public class SQLExceptionConverterFactory {
 		}
 
 		if ( converter == null ) {
-			LOG.trace( "Using dialect defined converter" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Using dialect defined converter" );
+			}
 			converter = dialect.buildSQLExceptionConverter();
 		}
 
@@ -106,7 +108,9 @@ public class SQLExceptionConverterFactory {
 
 	private static SQLExceptionConverter constructConverter(String converterClassName, ViolatedConstraintNameExtracter violatedConstraintNameExtracter) {
 		try {
-			LOG.tracev( "Attempting to construct instance of specified SQLExceptionConverter [{0}]", converterClassName );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Attempting to construct instance of specified SQLExceptionConverter [{0}]", converterClassName );
+			}
 			Class converterClass = ReflectHelper.classForName( converterClassName );
 
 			// First, try to find a matching constructor accepting a ViolatedConstraintNameExtracter param...

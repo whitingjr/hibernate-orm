@@ -21,7 +21,7 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.hibernate.jmx.internal;
+package org.hibernate.service.jmx.internal;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Map;
@@ -38,7 +38,7 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.internal.CoreMessageLogger;
 import org.hibernate.internal.util.config.ConfigurationHelper;
 import org.hibernate.service.Service;
-import org.hibernate.jmx.spi.JmxService;
+import org.hibernate.service.jmx.spi.JmxService;
 import org.hibernate.service.spi.Manageable;
 import org.hibernate.service.spi.Stoppable;
 
@@ -87,7 +87,9 @@ public class JmxServiceImpl implements JmxService, Stoppable {
 				if ( registeredMBeans != null ) {
 					for ( ObjectName objectName : registeredMBeans ) {
 						try {
-							LOG.tracev( "Unregistering registered MBean [ON={0}]", objectName );
+							if ( LOG.isTraceEnabled() ) {
+								LOG.tracev( "Unregistering registered MBean [ON={0}]", objectName );
+							}
 							mBeanServer.unregisterMBean( objectName );
 						}
 						catch ( Exception e ) {
@@ -98,7 +100,9 @@ public class JmxServiceImpl implements JmxService, Stoppable {
 
 				// stop the MBean server if we started it
 				if ( startedServer ) {
-					LOG.trace( "Attempting to release created MBeanServer" );
+					if ( LOG.isTraceEnabled() ) {
+						LOG.trace( "Attempting to release created MBeanServer" );
+					}
 					try {
 						MBeanServerFactory.releaseMBeanServer( mBeanServer );
 					}

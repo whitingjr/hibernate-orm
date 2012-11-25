@@ -33,7 +33,6 @@ import org.hibernate.ReplicationMode;
 import org.hibernate.TransientObjectException;
 import org.hibernate.engine.internal.Cascade;
 import org.hibernate.engine.spi.CascadingAction;
-import org.hibernate.engine.spi.CascadingActions;
 import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.engine.spi.Status;
@@ -66,14 +65,18 @@ public class DefaultReplicateEventListener extends AbstractSaveEventListener imp
 	public void onReplicate(ReplicateEvent event) {
 		final EventSource source = event.getSession();
 		if ( source.getPersistenceContext().reassociateIfUninitializedProxy( event.getObject() ) ) {
-			LOG.trace( "Uninitialized proxy passed to replicate()" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Uninitialized proxy passed to replicate()" );
+			}
 			return;
 		}
 
 		Object entity = source.getPersistenceContext().unproxyAndReassociate( event.getObject() );
 
 		if ( source.getPersistenceContext().isEntryFor( entity ) ) {
-			LOG.trace( "Ignoring persistent instance passed to replicate()" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Ignoring persistent instance passed to replicate()" );
+			}
 			//hum ... should we cascade anyway? throw an exception? fine like it is?
 			return;
 		}
@@ -121,7 +124,9 @@ public class DefaultReplicateEventListener extends AbstractSaveEventListener imp
 			if ( canReplicate )
 				performReplication( entity, id, realOldVersion, persister, replicationMode, source );
 			else
-				LOG.trace( "No need to replicate" );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace( "No need to replicate" );
+				}
 
 			//TODO: would it be better to do a refresh from db?
 		}
@@ -208,7 +213,7 @@ public class DefaultReplicateEventListener extends AbstractSaveEventListener imp
 			EventSource source) {
 		source.getPersistenceContext().incrementCascadeLevel();
 		try {
-			new Cascade( CascadingActions.REPLICATE, Cascade.AFTER_UPDATE, source )
+			new Cascade( CascadingAction.REPLICATE, Cascade.AFTER_UPDATE, source )
 					.cascade( persister, entity, replicationMode );
 		}
 		finally {
@@ -218,6 +223,6 @@ public class DefaultReplicateEventListener extends AbstractSaveEventListener imp
 
 	@Override
     protected CascadingAction getCascadeAction() {
-		return CascadingActions.REPLICATE;
+		return CascadingAction.REPLICATE;
 	}
 }

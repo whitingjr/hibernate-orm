@@ -35,7 +35,6 @@ import org.hibernate.TransientObjectException;
 import org.hibernate.classic.Lifecycle;
 import org.hibernate.engine.internal.Cascade;
 import org.hibernate.engine.spi.CascadingAction;
-import org.hibernate.engine.spi.CascadingActions;
 import org.hibernate.engine.spi.EntityEntry;
 import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -80,7 +79,9 @@ public class DefaultSaveOrUpdateEventListener extends AbstractSaveEventListener 
 
 		// For an uninitialized proxy, noop, don't even need to return an id, since it is never a save()
 		if ( reassociateIfUninitializedProxy( object, source ) ) {
-			LOG.trace( "Reassociated uninitialized proxy" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Reassociated uninitialized proxy" );
+			}
 		}
 		else {
 			//initialize properties of the event:
@@ -117,7 +118,9 @@ public class DefaultSaveOrUpdateEventListener extends AbstractSaveEventListener 
 	}
 
 	protected Serializable entityIsPersistent(SaveOrUpdateEvent event) throws HibernateException {
-		LOG.trace( "Ignoring persistent instance" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Ignoring persistent instance" );
+		}
 
 		EntityEntry entityEntry = event.getEntry();
 		if ( entityEntry == null ) {
@@ -173,7 +176,9 @@ public class DefaultSaveOrUpdateEventListener extends AbstractSaveEventListener 
 	 */
 	protected Serializable entityIsTransient(SaveOrUpdateEvent event) {
 
-		LOG.trace( "Saving transient instance" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Saving transient instance" );
+		}
 
 		final EventSource source = event.getSession();
 
@@ -220,7 +225,9 @@ public class DefaultSaveOrUpdateEventListener extends AbstractSaveEventListener 
 	 */
 	protected void entityIsDetached(SaveOrUpdateEvent event) {
 
-		LOG.trace( "Updating detached instance" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Updating detached instance" );
+		}
 
 		if ( event.getSession().getPersistenceContext().isEntryFor( event.getEntity() ) ) {
 			//TODO: assertion only, could be optimized away
@@ -280,7 +287,9 @@ public class DefaultSaveOrUpdateEventListener extends AbstractSaveEventListener 
 			EntityPersister persister) throws HibernateException {
 
 		if ( !persister.isMutable() ) {
-			LOG.trace( "Immutable instance passed to performUpdate()" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Immutable instance passed to performUpdate()" );
+			}
 		}
 
 		if ( LOG.isTraceEnabled() ) {
@@ -359,7 +368,7 @@ public class DefaultSaveOrUpdateEventListener extends AbstractSaveEventListener 
 		EventSource source = event.getSession();
 		source.getPersistenceContext().incrementCascadeLevel();
 		try {
-			new Cascade( CascadingActions.SAVE_UPDATE, Cascade.AFTER_UPDATE, source )
+			new Cascade( CascadingAction.SAVE_UPDATE, Cascade.AFTER_UPDATE, source )
 					.cascade( persister, entity );
 		}
 		finally {
@@ -369,6 +378,6 @@ public class DefaultSaveOrUpdateEventListener extends AbstractSaveEventListener 
 
 	@Override
     protected CascadingAction getCascadeAction() {
-		return CascadingActions.SAVE_UPDATE;
+		return CascadingAction.SAVE_UPDATE;
 	}
 }

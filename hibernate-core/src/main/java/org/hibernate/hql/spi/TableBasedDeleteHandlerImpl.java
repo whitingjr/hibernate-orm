@@ -74,7 +74,9 @@ public class TableBasedDeleteHandlerImpl
 		final ProcessedWhereClause processedWhereClause = processWhereClause( deleteStatement.getWhereClause() );
 		this.idSelectParameterSpecifications = processedWhereClause.getIdSelectParameterSpecifications();
 		this.idInsertSelect = generateIdInsertSelect( targetedPersister, bulkTargetAlias, processedWhereClause );
-		log.tracev( "Generated ID-INSERT-SELECT SQL (multi-table delete) : {0}", idInsertSelect );
+		if ( log.isTraceEnabled() ) {
+			log.tracev( "Generated ID-INSERT-SELECT SQL (multi-table delete) : {0}", idInsertSelect );
+		}
 
 		String[] tableNames = targetedPersister.getConstraintOrderedTableNameClosure();
 		String[][] columnNames = targetedPersister.getContraintOrderedTableKeyColumnClosure();

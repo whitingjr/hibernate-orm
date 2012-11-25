@@ -365,11 +365,15 @@ public abstract class AbstractInstrumenter implements Instrumenter {
 
 		public boolean shouldInstrumentField(String className, String fieldName) {
 			if ( descriptor.getName().equals( className ) ) {
-				logger.trace( "accepting transformation of field [" + className + "." + fieldName + "]" );
+				if ( logger.isTraceEnabled() ) {
+					logger.trace( "accepting transformation of field [" + className + "." + fieldName + "]" );
+				}
 				return true;
 			}
 			else {
-				logger.trace( "rejecting transformation of field [" + className + "." + fieldName + "]" );
+				if ( logger.isTraceEnabled() ) {
+					logger.trace( "rejecting transformation of field [" + className + "." + fieldName + "]" );
+				}
 				return false;
 			}
 		}
@@ -379,15 +383,21 @@ public abstract class AbstractInstrumenter implements Instrumenter {
 				String fieldOwnerClassName,
 				String fieldName) {
 			if ( descriptor.getName().equals( fieldOwnerClassName ) ) {
-				logger.trace( "accepting transformation of field access [" + fieldOwnerClassName + "." + fieldName + "]" );
+				if ( logger.isTraceEnabled() ) {
+					logger.trace( "accepting transformation of field access [" + fieldOwnerClassName + "." + fieldName + "]" );
+				}
 				return true;
 			}
 			else if ( options.performExtendedInstrumentation() && classNames.contains( fieldOwnerClassName ) ) {
-				logger.trace( "accepting extended transformation of field access [" + fieldOwnerClassName + "." + fieldName + "]" );
+				if ( logger.isTraceEnabled() ) {
+					logger.trace( "accepting extended transformation of field access [" + fieldOwnerClassName + "." + fieldName + "]" );
+				}
 				return true;
 			}
 			else {
-				logger.trace( "rejecting transformation of field access [" + fieldOwnerClassName + "." + fieldName + "]; caller = " + transformingClassName  );
+				if ( logger.isTraceEnabled() ) {
+					logger.trace( "rejecting transformation of field access [" + fieldOwnerClassName + "." + fieldName + "]; caller = " + transformingClassName  );
+				}
 				return false;
 			}
 		}

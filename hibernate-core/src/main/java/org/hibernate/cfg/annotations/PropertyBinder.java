@@ -334,7 +334,9 @@ public class PropertyBinder {
 			prop.setOptimisticLocked( includeInOptimisticLockChecks );
 		}
 
-		LOG.tracev( "Cascading {0} with {1}", name, cascade );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Cascading {0} with {1}", name, cascade );
+		}
 		this.mappingProperty = prop;
 		return prop;
 	}

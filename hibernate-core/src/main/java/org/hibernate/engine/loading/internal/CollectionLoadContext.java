@@ -119,10 +119,14 @@ public class CollectionLoadContext {
 			PersistentCollection collection = loadContexts.getPersistenceContext().getCollection( collectionKey );
 			if ( collection != null ) {
 				if ( collection.wasInitialized() ) {
-					LOG.trace( "Collection already initialized; ignoring" );
+					if ( LOG.isTraceEnabled() ) {
+						LOG.trace( "Collection already initialized; ignoring" );
+					}
 					return null; // ignore this row of results! Note the early exit
 				}
-				LOG.trace( "Collection not yet initialized; initializing" );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace( "Collection not yet initialized; initializing" );
+				}
 			}
 			else {
 				Object owner = loadContexts.getPersistenceContext().getCollectionOwner( key, persister );
@@ -131,11 +135,15 @@ public class CollectionLoadContext {
 				if ( newlySavedEntity ) {
 					// important, to account for newly saved entities in query
 					// todo : some kind of check for new status...
-					LOG.trace( "Owning entity already loaded; ignoring" );
+					if ( LOG.isTraceEnabled() ) {
+						LOG.trace( "Owning entity already loaded; ignoring" );
+					}
 					return null;
 				}
 				// create one
-				LOG.tracev( "Instantiating new collection [key={0}, rs={1}]", key, resultSet );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.tracev( "Instantiating new collection [key={0}, rs={1}]", key, resultSet );
+				}	
 				collection = persister.getCollectionType().instantiate(
 						loadContexts.getPersistenceContext().getSession(), persister, key );
 			}
@@ -146,12 +154,16 @@ public class CollectionLoadContext {
 			return collection;
 		}
 		if ( loadingCollectionEntry.getResultSet() == resultSet ) {
-			LOG.trace( "Found loading collection bound to current result set processing; reading row" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Found loading collection bound to current result set processing; reading row" );
+			}
 			return loadingCollectionEntry.getCollection();
 		}
 		// ignore this row, the collection is in process of
 		// being loaded somewhere further "up" the stack
-		LOG.trace( "Collection is already being initialized; ignoring row" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Collection is already being initialized; ignoring row" );
+		}
 		return null;
 	}
 
@@ -198,7 +210,9 @@ public class CollectionLoadContext {
 							lce.getCollection()
 					);
 				}
-				LOG.tracev( "Removing collection load entry [{0}]", lce );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.tracev( "Removing collection load entry [{0}]", lce );
+				}
 
 				// todo : i'd much rather have this done from #endLoadingCollection(CollectionPersister,LoadingCollectionEntry)...
 				loadContexts.unregisterLoadingCollectionXRef( collectionKey );
@@ -236,7 +250,9 @@ public class CollectionLoadContext {
 	}
 
 	private void endLoadingCollection(LoadingCollectionEntry lce, CollectionPersister persister) {
-		LOG.tracev( "Ending loading collection [{0}]", lce );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Ending loading collection [{0}]", lce );
+		}
 		final SessionImplementor session = getLoadContext().getPersistenceContext().getSession();
 
 		boolean hasNoQueuedAdds = lce.getCollection().endRead(); // warning: can cause a recursive calls! (proxy initialization)
@@ -251,12 +267,7 @@ public class CollectionLoadContext {
 		}
 		else {
 			ce.postInitialize( lce.getCollection() );
-//			if (ce.getLoadedPersister().getBatchSize() > 1) { // not the best place for doing this, moved into ce.postInitialize
-//				getLoadContext().getPersistenceContext().getBatchFetchQueue().removeBatchLoadableCollection(ce); 
-//			}
 		}
-		
-
 
 		boolean addToCache = hasNoQueuedAdds && // there were no queued additions
 				persister.hasCache() &&             // and the role has a cache

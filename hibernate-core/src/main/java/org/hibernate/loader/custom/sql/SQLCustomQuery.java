@@ -81,8 +81,9 @@ public class SQLCustomQuery implements CustomQuery {
 			final NativeSQLQueryReturn[] queryReturns,
 			final Collection additionalQuerySpaces,
 			final SessionFactoryImplementor factory) throws HibernateException {
-
-		LOG.tracev( "Starting processing of sql query [{0}]", sqlQuery );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting processing of sql query [{0}]", sqlQuery );
+		}
 		SQLQueryReturnProcessor processor = new SQLQueryReturnProcessor(queryReturns, factory);
 		SQLQueryReturnProcessor.ResultAliasContext aliasContext = processor.process();
 

@@ -34,7 +34,7 @@ import org.hibernate.PersistentObjectException;
 import org.hibernate.UnresolvableObjectException;
 import org.hibernate.cache.spi.CacheKey;
 import org.hibernate.engine.internal.Cascade;
-import org.hibernate.engine.spi.CascadingActions;
+import org.hibernate.engine.spi.CascadingAction;
 import org.hibernate.engine.spi.EntityEntry;
 import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -83,7 +83,9 @@ public class DefaultRefreshEventListener implements RefreshEventListener {
 		final Object object = source.getPersistenceContext().unproxyAndReassociate( event.getObject() );
 
 		if ( refreshedAlready.containsKey(object) ) {
-			LOG.trace( "Already refreshed" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Already refreshed" );
+			}
 			return;
 		}
 
@@ -119,7 +121,7 @@ public class DefaultRefreshEventListener implements RefreshEventListener {
 
 		// cascade the refresh prior to refreshing this entity
 		refreshedAlready.put(object, object);
-		new Cascade( CascadingActions.REFRESH, Cascade.BEFORE_REFRESH, source)
+		new Cascade( CascadingAction.REFRESH, Cascade.BEFORE_REFRESH, source)
 				.cascade( persister, object, refreshedAlready );
 
 		if ( e != null ) {

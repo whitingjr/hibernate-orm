@@ -655,7 +655,9 @@ public class Configuration implements Serializable {
 				inputStream.close();
 			}
 			catch ( IOException ignore ) {
-				LOG.trace( "Was unable to close input stream");
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace( "Was unable to close input stream");
+				}
 			}
 		}
 	}
@@ -1312,7 +1314,9 @@ public class Configuration implements Serializable {
 	}
 
 	protected void secondPassCompile() throws MappingException {
-		LOG.trace( "Starting secondPassCompile() processing" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Starting secondPassCompile() processing" );
+		}
 
 		//process default values first
 		{

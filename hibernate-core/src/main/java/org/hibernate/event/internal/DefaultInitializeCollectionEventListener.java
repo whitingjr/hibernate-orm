@@ -62,9 +62,9 @@ public class DefaultInitializeCollectionEventListener implements InitializeColle
 			if ( LOG.isTraceEnabled() ) {
 				LOG.tracev( "Initializing collection {0}",
 						MessageHelper.collectionInfoString( ce.getLoadedPersister(), collection, ce.getLoadedKey(), source ) );
+				LOG.trace( "Checking second-level cache" );
 			}
 
-			LOG.trace( "Checking second-level cache" );
 			final boolean foundInCache = initializeCollectionFromCache(
 					ce.getLoadedKey(),
 					ce.getLoadedPersister(),
@@ -73,12 +73,18 @@ public class DefaultInitializeCollectionEventListener implements InitializeColle
 				);
 
 			if ( foundInCache ) {
-				LOG.trace( "Collection initialized from cache" );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace( "Collection initialized from cache" );
+				}
 			}
 			else {
-				LOG.trace( "Collection not cached" );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace( "Collection not cached" );
+				}
 				ce.getLoadedPersister().initialize( ce.getLoadedKey(), source );
-				LOG.trace( "Collection initialized" );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace( "Collection initialized" );
+				}
 
 				if ( source.getFactory().getStatistics().isStatisticsEnabled() ) {
 					source.getFactory().getStatisticsImplementor().fetchCollection(
@@ -106,7 +112,9 @@ public class DefaultInitializeCollectionEventListener implements InitializeColle
 			SessionImplementor source) {
 
 		if ( !source.getLoadQueryInfluencers().getEnabledFilters().isEmpty() && persister.isAffectedByEnabledFilters( source ) ) {
-			LOG.trace( "Disregarding cached version (if any) of collection due to enabled filters" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Disregarding cached version (if any) of collection due to enabled filters" );
+			}
 			return false;
 		}
 
