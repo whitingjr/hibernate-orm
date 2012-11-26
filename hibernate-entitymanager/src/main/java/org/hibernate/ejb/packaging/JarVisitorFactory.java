@@ -104,7 +104,9 @@ public class JarVisitorFactory {
 					"Unable to determine JAR Url from " + url + ". Cause: " + e.getMessage()
 			);
 		}
-        LOG.trace("JAR URL from URL Entry: " + url + " >> " + jarUrl);
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace("JAR URL from URL Entry: " + url + " >> " + jarUrl);
+		}
 		return jarUrl;
 	}
 

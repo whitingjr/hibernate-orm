@@ -82,7 +82,9 @@ public class TransactionalAccessDelegate {
    public boolean putFromLoad(Object key, Object value, long txTimestamp, Object version, boolean minimalPutOverride)
             throws CacheException {
       if (!region.checkValid()) {
-         if (isTrace) log.tracef("Region %s not valid", region.getName());
+    	  if ( LOG.isTraceEnabled() ) {
+    		  if (isTrace) log.tracef("Region %s not valid", region.getName());
+    	  }
          return false;
       }
 

@@ -48,7 +48,9 @@ public abstract class EJB3CascadingAction extends CascadingAction {
 		@Override
         public void cascade(EventSource session, Object child, String entityName, Object anything, boolean isCascadeDeleteEnabled)
 		throws HibernateException {
-            LOG.trace("Cascading to persist: " + entityName);
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace("Cascading to persist: " + entityName);
+			}
 			session.persist( entityName, child, (Map) anything );
 		}
 		@Override

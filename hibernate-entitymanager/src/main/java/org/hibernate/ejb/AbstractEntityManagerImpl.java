@@ -1467,7 +1467,9 @@ public abstract class AbstractEntityManagerImpl implements HibernateEntityManage
 		@Override
 		public void doAction(TransactionCoordinator transactionCoordinator, int status) {
 			if ( session.isClosed() ) {
-                LOG.trace("Session was closed; nothing to do");
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace("Session was closed; nothing to do");
+				}
 				return;
 			}
 

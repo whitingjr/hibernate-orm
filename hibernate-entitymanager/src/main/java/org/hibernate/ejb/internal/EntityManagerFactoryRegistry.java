@@ -65,7 +65,9 @@ public class EntityManagerFactoryRegistry {
 	public void addEntityManagerFactory(String name, EntityManagerFactory entityManagerFactory) {
 		LOG.debugf( "Registering EntityManagerFactory: %s ", name );
 		if (name == null) { // allow unit tests that don't specify the pu name to succeed
-			LOG.tracef( "not registering EntityManagerFactory because name is null");
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracef( "not registering EntityManagerFactory because name is null");
+			}
 			return;
 		}
 		Set<EntityManagerFactory> entityManagerFactorySet = new HashSet<EntityManagerFactory>();
@@ -108,7 +110,9 @@ public class EntityManagerFactoryRegistry {
 		LOG.debugf( "Remove: name=%s", name );
 
 		if (name == null) { // allow unit tests that don't specify the pu name to succeed
-			LOG.tracef( "not removing EntityManagerFactory from registry because name is null");
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracef( "not removing EntityManagerFactory from registry because name is null");
+			}
 			return;
 		}
 

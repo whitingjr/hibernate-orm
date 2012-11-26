@@ -74,7 +74,9 @@ public class DualNodeJtaTransactionImpl implements Transaction {
             HeuristicRollbackException, IllegalStateException, SystemException {
 
       if (status == Status.STATUS_MARKED_ROLLBACK) {
-         log.trace("on commit, status was marked for rollback-only");
+    	  if ( LOG.isTraceEnabled() ) {
+    		  log.trace("on commit, status was marked for rollback-only");
+    	  }
          rollback();
       } else {
          status = Status.STATUS_PREPARING;
@@ -193,7 +195,9 @@ public class DualNodeJtaTransactionImpl implements Transaction {
          try {
             res.prepare(xid);
          } catch (XAException e) {
-            log.trace("The resource wants to rollback!", e);
+        	 if ( LOG.isTraceEnabled() ) {
+        		 log.trace("The resource wants to rollback!", e);
+        	 }
             return false;
          } catch (Throwable th) {
             log.error("Unexpected error from resource manager!", th);
@@ -264,8 +268,11 @@ public class DualNodeJtaTransactionImpl implements Transaction {
          // Commit only if not read only.
          if (prepareResult != XAResource.XA_RDONLY)
             xaResource.commit(xid, b);
-         else
-            log.tracef("Not committing {0} due to readonly.", xid);
+         else {
+        	 if ( LOG.isTraceEnabled() ) {
+        		 log.tracef("Not committing {0} due to readonly.", xid);
+        	 }
+         }
       }
 
       @Override

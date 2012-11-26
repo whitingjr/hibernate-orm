@@ -86,14 +86,18 @@ public class AttributeFactory {
 	public <X, Y> AttributeImplementor<X, Y> buildAttribute(AbstractManagedType<X> ownerType, Property property) {
 		if ( property.isSynthetic() ) {
 			// hide synthetic/virtual properties (fabricated by Hibernate) from the JPA metamodel.
-            LOG.tracef(
-					"Skipping synthetic property %s(%s)",
-					ownerType.getJavaType().getName(),
-					property.getName()
-			);
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracef(
+						"Skipping synthetic property %s(%s)",
+						ownerType.getJavaType().getName(),
+						property.getName()
+				);
+			}
 			return null;
 		}
-        LOG.trace("Building attribute [" + ownerType.getJavaType().getName() + "." + property.getName() + "]");
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace("Building attribute [" + ownerType.getJavaType().getName() + "." + property.getName() + "]");
+		}
 		final AttributeContext<X> attributeContext = wrap( ownerType, property );
 		final AttributeMetadata<X,Y> attributeMetadata =
 				determineAttributeMetadata( attributeContext, NORMAL_MEMBER_RESOLVER );
@@ -141,7 +145,9 @@ public class AttributeFactory {
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public <X, Y> SingularAttributeImpl<X, Y> buildIdAttribute(AbstractIdentifiableType<X> ownerType, Property property) {
-        LOG.trace("Building identifier attribute [" + ownerType.getJavaType().getName() + "." + property.getName() + "]");
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace("Building identifier attribute [" + ownerType.getJavaType().getName() + "." + property.getName() + "]");
+		}
 		final AttributeContext<X> attributeContext = wrap( ownerType, property );
 		final SingularAttributeMetadata<X,Y> attributeMetadata =
 				(SingularAttributeMetadata<X, Y>) determineAttributeMetadata( attributeContext, IDENTIFIER_MEMBER_RESOLVER );
@@ -167,7 +173,9 @@ public class AttributeFactory {
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public <X, Y> SingularAttributeImpl<X, Y> buildVersionAttribute(AbstractIdentifiableType<X> ownerType, Property property) {
-        LOG.trace("Building version attribute [ownerType.getJavaType().getName()" + "." + "property.getName()]");
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace("Building version attribute [ownerType.getJavaType().getName()" + "." + "property.getName()]");
+		}
 		final AttributeContext<X> attributeContext = wrap( ownerType, property );
 		final SingularAttributeMetadata<X,Y> attributeMetadata =
 				(SingularAttributeMetadata<X, Y>) determineAttributeMetadata( attributeContext, VERSION_MEMBER_RESOLVER );
@@ -438,13 +446,19 @@ public class AttributeFactory {
 	private <X,Y> AttributeMetadata<X,Y> determineAttributeMetadata(
 			AttributeContext<X> attributeContext,
 			MemberResolver memberResolver) {
-        LOG.trace("Starting attribute metadata determination [" + attributeContext.getPropertyMapping().getName() + "]");
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace("Starting attribute metadata determination [" + attributeContext.getPropertyMapping().getName() + "]");
+		}
 		final Member member = memberResolver.resolveMember( attributeContext );
-        LOG.trace("    Determined member [" + member + "]");
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace("    Determined member [" + member + "]");
+		}
 
 		final Value value = attributeContext.getPropertyMapping().getValue();
 		final org.hibernate.type.Type type = value.getType();
-        LOG.trace("    Determined type [name=" + type.getName() + ", class=" + type.getClass().getName() + "]");
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace("    Determined type [name=" + type.getName() + ", class=" + type.getClass().getName() + "]");
+		}
 
 		if ( type.isAnyType() ) {
 			// ANY mappings are currently not supported in the JPA metamodel; see HHH-6589

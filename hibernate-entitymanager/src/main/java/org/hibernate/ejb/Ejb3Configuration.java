@@ -320,14 +320,18 @@ public class Ejb3Configuration implements Serializable, Referenceable {
             if (!xmls.hasMoreElements()) LOG.unableToFindPersistenceXmlInClasspath();
 			while ( xmls.hasMoreElements() ) {
 				URL url = xmls.nextElement();
-                LOG.trace("Analyzing persistence.xml: " + url);
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace("Analyzing persistence.xml: " + url);
+				}
 				List<PersistenceMetadata> metadataFiles = PersistenceXmlLoader.deploy(
 						url,
 						integration,
 						cfg.getEntityResolver(),
 						PersistenceUnitTransactionType.RESOURCE_LOCAL );
 				for ( PersistenceMetadata metadata : metadataFiles ) {
-                    LOG.trace(metadata);
+					if ( LOG.isTraceEnabled() ) {
+						LOG.trace(metadata);
+					}
 
 					if ( metadata.getProvider() == null || IMPLEMENTATION_NAME.equalsIgnoreCase(
 							metadata.getProvider()

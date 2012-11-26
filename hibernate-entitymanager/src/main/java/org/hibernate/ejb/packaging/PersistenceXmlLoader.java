@@ -111,12 +111,16 @@ public final class PersistenceXmlLoader {
 
 		if (errors.size() == 0) {
 			v2Validator.setErrorHandler( new ErrorLogger( errors ) );
-            LOG.trace("Validate with persistence_2_0.xsd schema on file " + configURL);
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace("Validate with persistence_2_0.xsd schema on file " + configURL);
+			}
 			v2Validator.validate( new DOMSource( doc ) );
 			boolean isV1Schema = false;
 			if ( errors.size() != 0 ) {
 				//v2 fails, it could be because the file is v1.
-                LOG.trace("Found error with persistence_2_0.xsd schema on file " + configURL);
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace("Found error with persistence_2_0.xsd schema on file " + configURL);
+				}
 				SAXParseException exception = errors.get( 0 );
 				final String errorMessage = exception.getMessage();
 				//is it a validation error due to a v1 schema validated by a v2
@@ -126,7 +130,9 @@ public final class PersistenceXmlLoader {
 
 			}
 			if (isV1Schema) {
-                LOG.trace("Validate with persistence_1_0.xsd schema on file " + configURL);
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace("Validate with persistence_1_0.xsd schema on file " + configURL);
+				}
 				errors.clear();
 				v1Validator.setErrorHandler( new ErrorLogger( errors ) );
 				v1Validator.validate( new DOMSource( doc ) );
@@ -239,7 +245,9 @@ public final class PersistenceXmlLoader {
 		PersistenceMetadata metadata = new PersistenceMetadata();
 		String puName = top.getAttribute( "name" );
 		if ( StringHelper.isNotEmpty( puName ) ) {
-            LOG.trace("Persistent Unit name from persistence.xml: " + puName);
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace("Persistent Unit name from persistence.xml: " + puName);
+			}
 			metadata.setName( puName );
 		}
 		NodeList children = top.getChildNodes();
