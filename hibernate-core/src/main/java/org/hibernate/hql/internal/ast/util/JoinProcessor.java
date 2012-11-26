@@ -134,7 +134,9 @@ public class JoinProcessor implements SqlTokenTypes {
                     boolean containsTableAlias = fromClause.containsTableAlias(alias);
                     if (fromElement.isDereferencedBySubclassProperty()) {
                         // TODO : or should we return 'containsTableAlias'??
-						LOG.tracev( "Forcing inclusion of extra joins [alias={0}, containsTableAlias={1}]", alias, containsTableAlias );
+                    	if ( LOG.isTraceEnabled() ) {
+                    		LOG.tracev( "Forcing inclusion of extra joins [alias={0}, containsTableAlias={1}]", alias, containsTableAlias );
+                    	}
                         return true;
                     }
                     boolean shallowQuery = walker.isShallowQuery();

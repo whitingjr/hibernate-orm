@@ -147,7 +147,9 @@ public abstract class NullableType extends AbstractType implements StringReprese
 	throws HibernateException, SQLException {
 		try {
 			if ( value == null ) {
-				LOG.tracev("Binding null to parameter: {0}", index);
+				if ( LOG.isTraceEnabled() ) {
+					LOG.tracev("Binding null to parameter: {0}", index);
+				}
 
 				st.setNull( index, sqlType() );
 			}
@@ -186,7 +188,9 @@ public abstract class NullableType extends AbstractType implements StringReprese
 		try {
 			Object value = get(rs, name);
 			if ( value == null || rs.wasNull() ) {
-				LOG.tracev( "Returning null as column {0}", name );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.tracev( "Returning null as column {0}", name );
+				}
 				return null;
 			}
 			if ( LOG.isTraceEnabled() ) LOG.trace( "Returning '" + toString( value ) + "' as column " + name );

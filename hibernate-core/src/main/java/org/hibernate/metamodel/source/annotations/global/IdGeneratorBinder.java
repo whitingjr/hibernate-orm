@@ -133,7 +133,9 @@ public class IdGeneratorBinder {
 						parameterMap
 				)
 		);
-		LOG.tracef( "Add generic generator with name: %s", name );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracef( "Add generic generator with name: %s", name );
+		}
 	}
 
 	private static void bindSequenceGenerator(MetadataImplementor metadata, AnnotationInstance generator) {
@@ -167,7 +169,9 @@ public class IdGeneratorBinder {
 			);
 		}
 		metadata.addIdGenerator( new IdGenerator( name, strategy, parameterMap ) );
-		LOG.tracef( "Add sequence generator with name: %s", name );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracef( "Add sequence generator with name: %s", name );
+		}
 	}
 
 	private static void bindTableGenerator(MetadataImplementor metadata, AnnotationInstance generator) {
@@ -209,6 +213,8 @@ public class IdGeneratorBinder {
 			LOG.ignoringTableGeneratorConstraints( name );
 		}
 		metadata.addIdGenerator( new IdGenerator( name, strategy, parameterMap ) );
-		LOG.tracef( "Add table generator with name: %s", name );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracef( "Add table generator with name: %s", name );
+		}
 	}
 }

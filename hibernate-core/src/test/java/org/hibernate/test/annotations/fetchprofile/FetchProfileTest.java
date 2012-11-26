@@ -97,7 +97,7 @@ public class FetchProfileTest extends BaseUnitTestCase {
 			fail();
 		}
 		catch ( MappingException e ) {
-            log.trace("success");
+			log.trace("success");
 		}
 	}
 
@@ -113,7 +113,7 @@ public class FetchProfileTest extends BaseUnitTestCase {
 			fail();
 		}
 		catch ( MappingException e ) {
-            log.trace("success");
+			log.trace("success");
 		}
 	}
 
@@ -129,7 +129,7 @@ public class FetchProfileTest extends BaseUnitTestCase {
 			fail();
 		}
 		catch ( MappingException e ) {
-            log.trace("success");
+			log.trace("success");
 		}
 	}
 
@@ -162,7 +162,7 @@ public class FetchProfileTest extends BaseUnitTestCase {
 			fail();
 		}
 		catch ( MappingException e ) {
-            log.trace("success");
+			log.trace("success");
 		}
 	}
 

@@ -168,13 +168,17 @@ public class DriverManagerConnectionProviderImpl
 	}
 
 	public Connection getConnection() throws SQLException {
-		LOG.tracev( "Total checked-out connections: {0}", checkedOut );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Total checked-out connections: {0}", checkedOut );
+		}
 
 		// essentially, if we have available connections in the pool, use one...
 		synchronized (pool) {
 			if ( !pool.isEmpty() ) {
 				int last = pool.size() - 1;
-				LOG.tracev( "Using pooled JDBC connection, pool size: {0}", last );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.tracev( "Using pooled JDBC connection, pool size: {0}", last );
+				}
 				Connection pooled = pool.remove( last );
 				if ( isolation != null ) {
 					pooled.setTransactionIsolation( isolation.intValue() );
@@ -213,7 +217,9 @@ public class DriverManagerConnectionProviderImpl
 		synchronized (pool) {
 			int currentSize = pool.size();
 			if ( currentSize < poolSize ) {
-				LOG.tracev( "Returning connection to pool, pool size: {0}", ( currentSize + 1 ) );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.tracev( "Returning connection to pool, pool size: {0}", ( currentSize + 1 ) );
+				}
 				pool.add(conn);
 				return;
 			}

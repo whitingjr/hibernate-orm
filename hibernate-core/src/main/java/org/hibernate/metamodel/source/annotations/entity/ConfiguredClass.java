@@ -386,20 +386,24 @@ public class ConfiguredClass {
 		// overriding access annotations must be placed on properties AND have the access type PROPERTY
 		if ( AccessType.FIELD.equals( classAccessType ) ) {
 			if ( !( annotationTarget instanceof MethodInfo ) ) {
-				LOG.tracef(
-						"The access type of class %s is AccessType.FIELD. To override the access for an attribute " +
-								"@Access has to be placed on the property (getter)", classInfo.name().toString()
-				);
+				if ( LOG.isTraceEnabled() ) {
+					LOG.tracef(
+							"The access type of class %s is AccessType.FIELD. To override the access for an attribute " +
+									"@Access has to be placed on the property (getter)", classInfo.name().toString()
+					);
+				}
 				return false;
 			}
 
 			if ( !AccessType.PROPERTY.equals( accessType ) ) {
-				LOG.tracef(
-						"The access type of class %s is AccessType.FIELD. To override the access for an attribute " +
-								"@Access has to be placed on the property (getter) with an access type of AccessType.PROPERTY. " +
-								"Using AccessType.FIELD on the property has no effect",
-						classInfo.name().toString()
-				);
+				if ( LOG.isTraceEnabled() ) {
+					LOG.tracef(
+							"The access type of class %s is AccessType.FIELD. To override the access for an attribute " +
+									"@Access has to be placed on the property (getter) with an access type of AccessType.PROPERTY. " +
+									"Using AccessType.FIELD on the property has no effect",
+							classInfo.name().toString()
+					);
+				}
 				return false;
 			}
 		}
@@ -408,20 +412,24 @@ public class ConfiguredClass {
 		// overriding access annotations must be placed on fields and have the access type FIELD
 		if ( AccessType.PROPERTY.equals( classAccessType ) ) {
 			if ( !( annotationTarget instanceof FieldInfo ) ) {
-				LOG.tracef(
-						"The access type of class %s is AccessType.PROPERTY. To override the access for a field " +
-								"@Access has to be placed on the field ", classInfo.name().toString()
-				);
+				if ( LOG.isTraceEnabled() ) {
+					LOG.tracef(
+							"The access type of class %s is AccessType.PROPERTY. To override the access for a field " +
+									"@Access has to be placed on the field ", classInfo.name().toString()
+					);
+				}
 				return false;
 			}
 
 			if ( !AccessType.FIELD.equals( accessType ) ) {
-				LOG.tracef(
-						"The access type of class %s is AccessType.PROPERTY. To override the access for a field " +
-								"@Access has to be placed on the field with an access type of AccessType.FIELD. " +
-								"Using AccessType.PROPERTY on the field has no effect",
-						classInfo.name().toString()
-				);
+				if ( LOG.isTraceEnabled() ) {
+					LOG.tracef(
+							"The access type of class %s is AccessType.PROPERTY. To override the access for a field " +
+									"@Access has to be placed on the field with an access type of AccessType.FIELD. " +
+									"Using AccessType.PROPERTY on the field has no effect",
+							classInfo.name().toString()
+					);
+				}
 				return false;
 			}
 		}

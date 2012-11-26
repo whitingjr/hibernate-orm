@@ -88,7 +88,9 @@ public final class SerializationHelper {
 	 * @throws SerializationException (runtime) if the serialization fails
 	 */
 	public static Object clone(Serializable object) throws SerializationException {
-		LOG.trace( "Starting clone through serialization" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Starting clone through serialization" );
+		}
 		if ( object == null ) {
 			return null;
 		}
@@ -231,7 +233,9 @@ public final class SerializationHelper {
 			throw new IllegalArgumentException( "The InputStream must not be null" );
 		}
 
-		LOG.trace( "Starting deserialization of object" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Starting deserialization of object" );
+		}
 
 		try {
 			CustomObjectInputStream in = new CustomObjectInputStream(
@@ -337,13 +341,17 @@ public final class SerializationHelper {
 		@Override
 		protected Class resolveClass(ObjectStreamClass v) throws IOException, ClassNotFoundException {
 			final String className = v.getName();
-			LOG.tracev( "Attempting to locate class [{0}]", className );
+			if ( LOG.isTraceEnabled() ) { 
+				LOG.tracev( "Attempting to locate class [{0}]", className );
+			}
 
 			try {
 				return Class.forName( className, false, loader1 );
 			}
 			catch ( ClassNotFoundException e ) {
-				LOG.trace( "Unable to locate class using given classloader" );
+				if ( LOG.isTraceEnabled() ) { 
+					LOG.trace( "Unable to locate class using given classloader" );
+				}
 			}
 
 			if ( different( loader1, loader2 ) ) {
@@ -351,7 +359,9 @@ public final class SerializationHelper {
 					return Class.forName( className, false, loader2 );
 				}
 				catch ( ClassNotFoundException e ) {
-					LOG.trace( "Unable to locate class using given classloader" );
+					if ( LOG.isTraceEnabled() ) { 
+						LOG.trace( "Unable to locate class using given classloader" );
+					}
 				}
 			}
 
@@ -360,7 +370,9 @@ public final class SerializationHelper {
 					return Class.forName( className, false, loader3 );
 				}
 				catch ( ClassNotFoundException e ) {
-					LOG.trace( "Unable to locate class using given classloader" );
+					if ( LOG.isTraceEnabled() ) { 
+						LOG.trace( "Unable to locate class using given classloader" );
+					}
 				}
 			}
 

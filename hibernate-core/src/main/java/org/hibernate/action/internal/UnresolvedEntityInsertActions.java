@@ -118,7 +118,9 @@ public class UnresolvedEntityInsertActions {
 	 */
 	public void checkNoUnresolvedActionsAfterOperation() throws PropertyValueException {
 		if ( isEmpty() ) {
-			LOG.trace( "No entity insert actions have non-nullable, transient entity dependencies." );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "No entity insert actions have non-nullable, transient entity dependencies." );
+			}
 		}
 		else {
 			AbstractEntityInsertAction firstDependentAction =
@@ -289,7 +291,9 @@ public class UnresolvedEntityInsertActions {
 	 */
 	public void serialize(ObjectOutputStream oos) throws IOException {
 		int queueSize = dependenciesByAction.size();
-		LOG.tracev( "Starting serialization of [{0}] unresolved insert entries", queueSize );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting serialization of [{0}] unresolved insert entries", queueSize );
+		}
 		oos.writeInt( queueSize );
 		for ( AbstractEntityInsertAction unresolvedAction : dependenciesByAction.keySet() ) {
 			oos.writeObject( unresolvedAction );
@@ -313,7 +317,9 @@ public class UnresolvedEntityInsertActions {
 		UnresolvedEntityInsertActions rtn = new UnresolvedEntityInsertActions();
 
 		int queueSize = ois.readInt();
-		LOG.tracev( "Starting deserialization of [{0}] unresolved insert entries", queueSize );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting deserialization of [{0}] unresolved insert entries", queueSize );
+		}
 		for ( int i = 0; i < queueSize; i++ ) {
 			AbstractEntityInsertAction unresolvedAction = ( AbstractEntityInsertAction ) ois.readObject();
 			unresolvedAction.afterDeserialize( session );

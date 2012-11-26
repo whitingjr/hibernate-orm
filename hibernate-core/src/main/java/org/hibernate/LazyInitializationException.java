@@ -42,7 +42,9 @@ public class LazyInitializationException extends HibernateException {
 
 	public LazyInitializationException(String msg) {
 		super( msg );
-		LOG.trace( msg, this );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( msg, this );
+		}
 	}
 
 }

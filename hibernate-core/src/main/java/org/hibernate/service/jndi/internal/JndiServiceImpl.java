@@ -116,7 +116,9 @@ public class JndiServiceImpl implements JndiService {
 
 	private void bind(Name name, Object value, Context context) {
 		try {
-			LOG.tracef( "Binding : %s", name );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracef( "Binding : %s", name );
+			}
 			context.rebind( name, value );
 		}
 		catch ( Exception initialException ) {
@@ -134,7 +136,9 @@ public class JndiServiceImpl implements JndiService {
 
 				Context intermediateContext = null;
 				try {
-					LOG.tracev( "Intermediate lookup: {0}", intermediateContextName );
+					if ( LOG.isTraceEnabled() ) {
+						LOG.tracev( "Intermediate lookup: {0}", intermediateContextName );
+					}
 					intermediateContext = (Context) intermediateContextBase.lookup( intermediateContextName );
 				}
 				catch ( NameNotFoundException handledBelow ) {
@@ -145,10 +149,14 @@ public class JndiServiceImpl implements JndiService {
 				}
 
 				if ( intermediateContext != null ) {
-					LOG.tracev( "Found intermediate context: {0}", intermediateContextName );
+					if ( LOG.isTraceEnabled() ) {
+						LOG.tracev( "Found intermediate context: {0}", intermediateContextName );
+					}
 				}
 				else {
-					LOG.tracev( "Creating sub-context: {0}", intermediateContextName );
+					if ( LOG.isTraceEnabled() ) {
+						LOG.tracev( "Creating sub-context: {0}", intermediateContextName );
+					}
 					try {
 						intermediateContext = intermediateContextBase.createSubcontext( intermediateContextName );
 					}
@@ -159,7 +167,9 @@ public class JndiServiceImpl implements JndiService {
 				intermediateContextBase = intermediateContext;
 				name = name.getSuffix( 1 );
 			}
-			LOG.tracev( "Binding : {0}", name );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Binding : {0}", name );
+			}
 			try {
 				intermediateContextBase.rebind( name, value );
 			}

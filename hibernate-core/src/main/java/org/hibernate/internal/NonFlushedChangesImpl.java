@@ -59,14 +59,18 @@ public final class NonFlushedChangesImpl implements NonFlushedChanges, Serializa
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		LOG.trace( "Deserializing NonFlushedChangesImpl" );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.trace( "Deserializing NonFlushedChangesImpl" );
+		}
 		ois.defaultReadObject();
 		persistenceContext = StatefulPersistenceContext.deserialize( ois, null );
 		actionQueue = ActionQueue.deserialize( ois, null );
 	}
 
 	private void writeObject(ObjectOutputStream oos) throws IOException {
-		LOG.trace( "Serializing NonFlushedChangesImpl" );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.trace( "Serializing NonFlushedChangesImpl" );
+		}
 		oos.defaultWriteObject();
 		persistenceContext.serialize( oos );
 		actionQueue.serialize( oos );

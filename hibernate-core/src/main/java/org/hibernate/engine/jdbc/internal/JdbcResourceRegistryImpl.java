@@ -62,7 +62,9 @@ public class JdbcResourceRegistryImpl implements JdbcResourceRegistry {
 
 	@Override
 	public void register(Statement statement) {
-		LOG.tracev( "Registering statement [{0}]", statement );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Registering statement [{0}]", statement );
+		}
 		if ( xref.containsKey( statement ) ) {
 			throw new HibernateException( "statement already registered with JDBCContainer" );
 		}
@@ -72,7 +74,9 @@ public class JdbcResourceRegistryImpl implements JdbcResourceRegistry {
 	@Override
 	@SuppressWarnings({ "unchecked" })
 	public void registerLastQuery(Statement statement) {
-		LOG.tracev( "Registering last query statement [{0}]", statement );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Registering last query statement [{0}]", statement );
+		}
 		if ( statement instanceof JdbcWrapper ) {
 			JdbcWrapper<Statement> wrapper = ( JdbcWrapper<Statement> ) statement;
 			registerLastQuery( wrapper.getWrappedObject() );
@@ -101,7 +105,9 @@ public class JdbcResourceRegistryImpl implements JdbcResourceRegistry {
 
 	@Override
 	public void release(Statement statement) {
-		LOG.tracev( "Releasing statement [{0}]", statement );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Releasing statement [{0}]", statement );
+		}
 		Set<ResultSet> resultSets = xref.get( statement );
 		if ( resultSets != null ) {
 			for ( ResultSet resultSet : resultSets ) {
@@ -115,7 +121,9 @@ public class JdbcResourceRegistryImpl implements JdbcResourceRegistry {
 
 	@Override
 	public void register(ResultSet resultSet) {
-		LOG.tracev( "Registering result set [{0}]", resultSet );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Registering result set [{0}]", resultSet );
+		}
 		Statement statement;
 		try {
 			statement = resultSet.getStatement();
@@ -141,7 +149,9 @@ public class JdbcResourceRegistryImpl implements JdbcResourceRegistry {
 
 	@Override
 	public void release(ResultSet resultSet) {
-		LOG.tracev( "Releasing result set [{0}]", resultSet );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Releasing result set [{0}]", resultSet );
+		}
 		Statement statement;
 		try {
 			statement = resultSet.getStatement();
@@ -177,7 +187,9 @@ public class JdbcResourceRegistryImpl implements JdbcResourceRegistry {
 
 	@Override
 	public void releaseResources() {
-		LOG.tracev( "Releasing JDBC container resources [{0}]", this );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Releasing JDBC container resources [{0}]", this );
+		}
 		cleanup();
 	}
 
@@ -202,13 +214,17 @@ public class JdbcResourceRegistryImpl implements JdbcResourceRegistry {
 
 	@Override
 	public void close() {
-		LOG.tracev( "Closing JDBC container [{0}]", this );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Closing JDBC container [{0}]", this );
+		}
 		cleanup();
 	}
 
 	@SuppressWarnings({ "unchecked" })
 	protected void close(Statement statement) {
-		LOG.tracev( "Closing prepared statement [{0}]", statement );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Closing prepared statement [{0}]", statement );
+		}
 
 		if ( statement instanceof InvalidatableWrapper ) {
 			InvalidatableWrapper<Statement> wrapper = ( InvalidatableWrapper<Statement> ) statement;
@@ -251,7 +267,9 @@ public class JdbcResourceRegistryImpl implements JdbcResourceRegistry {
 
 	@SuppressWarnings({ "unchecked" })
 	protected void close(ResultSet resultSet) {
-		LOG.tracev( "Closing result set [{0}]", resultSet );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Closing result set [{0}]", resultSet );
+		}
 
 		if ( resultSet instanceof InvalidatableWrapper ) {
 			InvalidatableWrapper<ResultSet> wrapper = (InvalidatableWrapper<ResultSet>) resultSet;

@@ -867,7 +867,9 @@ public abstract class Loader {
 		try {
 			handleEmptyCollections( queryParameters.getCollectionKeys(), rs, session );
 			EntityKey[] keys = new EntityKey[entitySpan]; //we can reuse it for each row
-			LOG.trace( "Processing result set" );
+			if ( LOG.isTraceEnabled() ) { 
+				LOG.trace( "Processing result set" );
+			}
 			int count;
 			for ( count = 0; count < maxRows && rs.next(); count++ ) {
 				LOG.debugf( "Result set row: %s", count );
@@ -889,7 +891,9 @@ public abstract class Loader {
 				}
 			}
 
-			LOG.tracev( "Done processing result set ({0} rows)", count );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Done processing result set ({0} rows)", count );
+			}
 
 		}
 		finally {
@@ -1014,7 +1018,9 @@ public abstract class Loader {
 
 		if ( hydratedObjects!=null ) {
 			int hydratedObjectsSize = hydratedObjects.size();
-			LOG.tracev( "Total objects hydrated: {0}", hydratedObjectsSize );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Total objects hydrated: {0}", hydratedObjectsSize );
+			}
 			for ( int i = 0; i < hydratedObjectsSize; i++ ) {
 				TwoPhaseLoad.initializeEntity( hydratedObjects.get(i), readOnly, session, pre, post );
 			}
@@ -1795,7 +1801,9 @@ public abstract class Loader {
 				}
 			}
 
-			LOG.tracev( "Bound [{0}] parameters total", col );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Bound [{0}] parameters total", col );
+			}
 		}
 		catch ( SQLException sqle ) {
 			st.close();
@@ -1968,7 +1976,9 @@ public abstract class Loader {
 
 	private ColumnNameCache retreiveColumnNameToIndexCache(ResultSet rs) throws SQLException {
 		if ( columnNameCache == null ) {
-			LOG.trace( "Building columnName->columnIndex cache" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Building columnName->columnIndex cache" );
+			}
 			columnNameCache = new ColumnNameCache( rs.getMetaData().getColumnCount() );
 		}
 
@@ -2237,10 +2247,12 @@ public abstract class Loader {
 
 		QueryKey key = generateQueryKey( session, queryParameters );
 
-		if ( querySpaces == null || querySpaces.size() == 0 )
-			LOG.tracev( "Unexpected querySpaces is {0}", ( querySpaces == null ? querySpaces : "empty" ) );
-		else {
-			LOG.tracev( "querySpaces is {0}", querySpaces );
+		if ( LOG.isTraceEnabled() ) {
+			if ( querySpaces == null || querySpaces.size() == 0 )
+				LOG.tracev( "Unexpected querySpaces is {0}", ( querySpaces == null ? querySpaces : "empty" ) );
+			else {
+				LOG.tracev( "querySpaces is {0}", querySpaces );
+			}
 		}
 
 		List result = getResultFromQueryCache(

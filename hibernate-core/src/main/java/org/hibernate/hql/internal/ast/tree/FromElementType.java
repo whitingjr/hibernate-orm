@@ -391,7 +391,9 @@ class FromElementType {
 		}
 
 		String[] columns = propertyMapping.toColumns( path );
-		LOG.tracev( "Using non-qualified column reference [{0} -> ({1})]", path, ArrayHelper.toString( columns ) );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Using non-qualified column reference [{0} -> ({1})]", path, ArrayHelper.toString( columns ) );
+		}
 		return columns;
 	}
 

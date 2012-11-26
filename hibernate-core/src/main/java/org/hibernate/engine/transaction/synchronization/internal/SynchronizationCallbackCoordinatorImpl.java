@@ -82,7 +82,9 @@ public class SynchronizationCallbackCoordinatorImpl implements SynchronizationCa
 	// sync callbacks ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	public void beforeCompletion() {
-		LOG.trace( "Transaction before completion callback" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Transaction before completion callback" );
+		}
 
 		boolean flush;
 		try {
@@ -100,7 +102,9 @@ public class SynchronizationCallbackCoordinatorImpl implements SynchronizationCa
 
 		try {
 			if ( flush ) {
-				LOG.trace( "Automatically flushing session" );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace( "Automatically flushing session" );
+				}
 				transactionCoordinator.getTransactionContext().managedFlush();
 			}
 		}
@@ -119,7 +123,9 @@ public class SynchronizationCallbackCoordinatorImpl implements SynchronizationCa
 	}
 
 	public void afterCompletion(int status) {
-		LOG.tracev( "Transaction after completion callback [status={0}]", status );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Transaction after completion callback [status={0}]", status );
+		}
 
 		try {
 			afterCompletionAction.doAction( transactionCoordinator, status );
@@ -128,7 +134,9 @@ public class SynchronizationCallbackCoordinatorImpl implements SynchronizationCa
 		finally {
 			reset();
 			if ( transactionContext().shouldAutoClose() && !transactionContext().isClosed() ) {
-				LOG.trace( "Automatically closing session" );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace( "Automatically closing session" );
+				}
 				transactionContext().managedClose();
 			}
 		}

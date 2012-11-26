@@ -79,7 +79,9 @@ public final class Versioning {
 	 */
 	private static Object seed(VersionType versionType, SessionImplementor session) {
 		Object seed = versionType.seed( session );
-		LOG.tracev( "Seeding: {0}", seed );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Seeding: {0}", seed );
+		}
 		return seed;
 	}
 
@@ -112,7 +114,9 @@ public final class Versioning {
 			fields[versionProperty] = seed( versionType, session );
 			return true;
 		}
-		LOG.tracev( "Using initial version: {0}", initialVersion );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Using initial version: {0}", initialVersion );
+		}
 		return false;
 	}
 

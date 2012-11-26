@@ -112,7 +112,9 @@ public class LobCreatorBuilder {
 						freeMethod.invoke( clob, NO_ARGS );
 					}
 					catch ( Throwable ignore ) {
-						LOG.tracef( "Unable to free CLOB created to test createClob() implementation : %s", ignore );
+						if ( LOG.isTraceEnabled() ) {
+							LOG.tracef( "Unable to free CLOB created to test createClob() implementation : %s", ignore );
+						}
 					}
 					return true;
 				}

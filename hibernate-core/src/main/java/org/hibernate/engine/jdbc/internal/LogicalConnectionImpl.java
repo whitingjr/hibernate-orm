@@ -190,7 +190,9 @@ public class LogicalConnectionImpl implements LogicalConnectionImplementor {
 
 	@Override
 	public Connection close() {
-		LOG.trace( "Closing logical connection" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Closing logical connection" );
+		}
 		Connection c = isUserSuppliedConnection ? physicalConnection : null;
 		try {
 			releaseProxies();
@@ -204,7 +206,9 @@ public class LogicalConnectionImpl implements LogicalConnectionImplementor {
 			// no matter what
 			physicalConnection = null;
 			isClosed = true;
-			LOG.trace( "Logical connection closed" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Logical connection closed" );
+			}
 			for ( ConnectionObserver observer : observers ) {
 				observer.logicalConnectionClosed();
 			}
@@ -231,7 +235,9 @@ public class LogicalConnectionImpl implements LogicalConnectionImplementor {
 
 	@Override
 	public void afterStatementExecution() {
-		LOG.tracev( "Starting after statement execution processing [{0}]", connectionReleaseMode );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting after statement execution processing [{0}]", connectionReleaseMode );
+		}
 		if ( connectionReleaseMode == ConnectionReleaseMode.AFTER_STATEMENT ) {
 			if ( ! releasesEnabled ) {
 				LOG.debug( "Skipping aggressive release due to manual disabling" );
@@ -259,13 +265,17 @@ public class LogicalConnectionImpl implements LogicalConnectionImplementor {
 
 	@Override
 	public void disableReleases() {
-		LOG.trace( "Disabling releases" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Disabling releases" );
+		}
 		releasesEnabled = false;
 	}
 
 	@Override
 	public void enableReleases() {
-		LOG.trace( "(Re)enabling releases" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "(Re)enabling releases" );
+		}
 		releasesEnabled = true;
 		afterStatementExecution();
 	}

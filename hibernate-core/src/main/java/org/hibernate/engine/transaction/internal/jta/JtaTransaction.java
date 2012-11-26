@@ -210,7 +210,9 @@ public class JtaTransaction extends AbstractTransactionImpl {
 
 	@Override
 	public void markRollbackOnly() {
-		LOG.trace( "Marking transaction for rollback only" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Marking transaction for rollback only" );
+		}
 		try {
 			if ( userTransaction == null ) {
 				userTransaction = locateUserTransaction();

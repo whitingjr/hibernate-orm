@@ -78,7 +78,9 @@ public abstract class AbstractFlushingEventListener implements Serializable {
 	 */
 	protected void flushEverythingToExecutions(FlushEvent event) throws HibernateException {
 
-		LOG.trace( "Flushing session" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Flushing session" );
+		}
 
 		EventSource session = event.getSession();
 
@@ -195,7 +197,9 @@ public abstract class AbstractFlushingEventListener implements Serializable {
 	 */
 	private void flushEntities(final FlushEvent event, final PersistenceContext persistenceContext) throws HibernateException {
 
-		LOG.trace( "Flushing entities and processing referenced collections" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Flushing entities and processing referenced collections" );
+		}
 
 		final EventSource source = event.getSession();
 		final Iterable<FlushEntityEventListener> flushListeners = source
@@ -236,7 +240,9 @@ public abstract class AbstractFlushingEventListener implements Serializable {
 	 */
 	private void flushCollections(final EventSource session, final PersistenceContext persistenceContext) throws HibernateException {
 
-		LOG.trace( "Processing unreferenced collections" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Processing unreferenced collections" );
+		}
 
 		for ( Map.Entry<PersistentCollection,CollectionEntry> me :
 				IdentityMap.concurrentEntries( (Map<PersistentCollection,CollectionEntry>) persistenceContext.getCollectionEntries() )) {
@@ -248,7 +254,9 @@ public abstract class AbstractFlushingEventListener implements Serializable {
 
 		// Schedule updates to collections:
 
-		LOG.trace( "Scheduling collection removes/(re)creates/updates" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Scheduling collection removes/(re)creates/updates" );
+		}
 
 		ActionQueue actionQueue = session.getActionQueue();
 		for ( Map.Entry<PersistentCollection,CollectionEntry> me :
@@ -311,7 +319,9 @@ public abstract class AbstractFlushingEventListener implements Serializable {
 	 * @param session The session being flushed
 	 */
 	protected void performExecutions(EventSource session) {
-		LOG.trace( "Executing flush" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Executing flush" );
+		}
 
 		// IMPL NOTE : here we alter the flushing flag of the persistence context to allow
 		//		during-flush callbacks more leniency in regards to initializing proxies and
@@ -343,7 +353,9 @@ public abstract class AbstractFlushingEventListener implements Serializable {
 	 */
 	protected void postFlush(SessionImplementor session) throws HibernateException {
 
-		LOG.trace( "Post flush" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Post flush" );
+		}
 
 		final PersistenceContext persistenceContext = session.getPersistenceContext();
 		persistenceContext.getCollectionsByKey().clear();

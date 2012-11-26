@@ -96,7 +96,9 @@ public class DefaultMergeEventListener extends AbstractSaveEventListener impleme
 			if ( original instanceof HibernateProxy ) {
 				LazyInitializer li = ( (HibernateProxy) original ).getHibernateLazyInitializer();
 				if ( li.isUninitialized() ) {
-					LOG.trace( "Ignoring uninitialized proxy" );
+					if ( LOG.isTraceEnabled() ) {
+						LOG.trace( "Ignoring uninitialized proxy" );
+					}
 					event.setResult( source.load( li.getEntityName(), li.getIdentifier() ) );
 					return; //EARLY EXIT!
 				}
@@ -110,12 +112,16 @@ public class DefaultMergeEventListener extends AbstractSaveEventListener impleme
 
 			if ( copyCache.containsKey( entity ) &&
 					( copyCache.isOperatedOn( entity ) ) ) {
-				LOG.trace( "Already in merge process" );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace( "Already in merge process" );
+				}
 				event.setResult( entity );
 			}
 			else {
 				if ( copyCache.containsKey( entity ) ) {
-					LOG.trace( "Already in copyCache; setting in merge process" );
+					if ( LOG.isTraceEnabled() ) {
+						LOG.trace( "Already in copyCache; setting in merge process" );
+					}
 					copyCache.setOperatedOn( entity, true );
 				}
 				event.setEntity( entity );
@@ -170,7 +176,9 @@ public class DefaultMergeEventListener extends AbstractSaveEventListener impleme
 	}
 
 	protected void entityIsPersistent(MergeEvent event, Map copyCache) {
-		LOG.trace( "Ignoring persistent instance" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Ignoring persistent instance" );
+		}
 
 		//TODO: check that entry.getIdentifier().equals(requestedId)
 
@@ -188,7 +196,9 @@ public class DefaultMergeEventListener extends AbstractSaveEventListener impleme
 
 	protected void entityIsTransient(MergeEvent event, Map copyCache) {
 
-		LOG.trace( "Merging transient instance" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Merging transient instance" );
+		}
 
 		final Object entity = event.getEntity();
 		final EventSource source = event.getSession();
@@ -242,7 +252,9 @@ public class DefaultMergeEventListener extends AbstractSaveEventListener impleme
 
 	protected void entityIsDetached(MergeEvent event, Map copyCache) {
 
-		LOG.trace( "Merging detached instance" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Merging detached instance" );
+		}
 
 		final Object entity = event.getEntity();
 		final EventSource source = event.getSession();

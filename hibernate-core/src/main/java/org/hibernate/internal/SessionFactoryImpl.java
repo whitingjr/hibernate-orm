@@ -342,7 +342,9 @@ public final class SessionFactoryImpl
 			if ( accessStrategy == null && settings.isSecondLevelCacheEnabled() ) {
 				final AccessType accessType = AccessType.fromExternalName( model.getCacheConcurrencyStrategy() );
 				if ( accessType != null ) {
-					LOG.tracef( "Building shared cache region for entity data [%s]", model.getEntityName() );
+					if ( LOG.isTraceEnabled() ) { 
+						LOG.tracef( "Building shared cache region for entity data [%s]", model.getEntityName() );
+					}
 					EntityRegion entityRegion = regionFactory.buildEntityRegion( cacheRegionName, properties, CacheDataDescriptionImpl.decode( model ) );
 					accessStrategy = entityRegion.buildAccessStrategy( accessType );
 					entityAccessStrategies.put( cacheRegionName, accessStrategy );
@@ -402,7 +404,9 @@ public final class SessionFactoryImpl
 			final AccessType accessType = AccessType.fromExternalName( model.getCacheConcurrencyStrategy() );
 			CollectionRegionAccessStrategy accessStrategy = null;
 			if ( accessType != null && settings.isSecondLevelCacheEnabled() ) {
-				LOG.tracev( "Building shared cache region for collection data [{0}]", model.getRole() );
+				if ( LOG.isTraceEnabled() ) { 
+					LOG.tracev( "Building shared cache region for collection data [{0}]", model.getRole() );
+				}
 				CollectionRegion collectionRegion = regionFactory.buildCollectionRegion( cacheRegionName, properties, CacheDataDescriptionImpl
 						.decode( model ) );
 				accessStrategy = collectionRegion.buildAccessStrategy( accessType );
@@ -1350,7 +1354,9 @@ public final class SessionFactoryImpl
 	public void close() throws HibernateException {
 
 		if ( isClosed ) {
-			LOG.trace( "Already closed" );
+			if ( LOG.isTraceEnabled() ) { 
+				LOG.trace( "Already closed" );
+			}
 			return;
 		}
 
@@ -1714,7 +1720,9 @@ public final class SessionFactoryImpl
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		LOG.debugf( "Serializing: %s", uuid );
 		out.defaultWriteObject();
-		LOG.trace( "Serialized" );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.trace( "Serialized" );
+		}
 	}
 
 	/**
@@ -1726,7 +1734,9 @@ public final class SessionFactoryImpl
 	 * @throws ClassNotFoundException Again, can be thrown by the stream
 	 */
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		LOG.trace( "Deserializing" );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.trace( "Deserializing" );
+		}
 		in.defaultReadObject();
 		LOG.debugf( "Deserialized: %s", uuid );
 	}
@@ -1741,7 +1751,9 @@ public final class SessionFactoryImpl
 	 * @throws InvalidObjectException Thrown if we could not resolve the factory by uuid/name.
 	 */
 	private Object readResolve() throws InvalidObjectException {
-		LOG.trace( "Resolving serialized SessionFactory" );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.trace( "Resolving serialized SessionFactory" );
+		}
 		return locateSessionFactoryOnDeserialization( uuid, name );
 	}
 
@@ -1788,7 +1800,9 @@ public final class SessionFactoryImpl
 	 * @throws ClassNotFoundException indicates problems reading back serial data stream
 	 */
 	static SessionFactoryImpl deserialize(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		LOG.trace( "Deserializing SessionFactory from Session" );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.trace( "Deserializing SessionFactory from Session" );
+		}
 		final String uuid = ois.readUTF();
 		boolean isNamed = ois.readBoolean();
 		final String name = isNamed ? ois.readUTF() : null;

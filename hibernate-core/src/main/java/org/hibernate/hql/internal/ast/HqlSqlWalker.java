@@ -590,7 +590,9 @@ public class HqlSqlWalker extends HqlSqlBaseWalker implements ErrorReporter, Par
 		if ( fromElements.size() == 1 ) {
 			final FromElement fromElement = ( FromElement ) fromElements.get( 0 );
 			try {
-				LOG.tracev( "Attempting to resolve property [{0}] as a non-qualified ref", identText );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.tracev( "Attempting to resolve property [{0}] as a non-qualified ref", identText );
+				}
 				return fromElement.getPropertyMapping( identText ).toType( identText ) != null;
 			}
 			catch( QueryException e ) {

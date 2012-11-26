@@ -281,10 +281,14 @@ public final class QueryParameters {
 	public void traceParameters(SessionFactoryImplementor factory) throws HibernateException {
 		EntityPrinter print = new EntityPrinter( factory );
 		if ( positionalParameterValues.length != 0 ) {
-			LOG.tracev( "Parameters: {0}", print.toString( positionalParameterTypes, positionalParameterValues ) );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Parameters: {0}", print.toString( positionalParameterTypes, positionalParameterValues ) );
+			}
 		}
 		if ( namedParameters != null ) {
-			LOG.tracev( "Named parameters: {0}", print.toString( namedParameters ) );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Named parameters: {0}", print.toString( namedParameters ) );
+			}
 		}
 	}
 

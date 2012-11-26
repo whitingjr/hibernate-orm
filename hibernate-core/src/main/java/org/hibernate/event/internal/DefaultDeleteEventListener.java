@@ -95,7 +95,9 @@ public class DefaultDeleteEventListener implements DeleteEventListener {
 		final Object version;
 
 		if ( entityEntry == null ) {
-			LOG.trace( "Entity was not persistent in delete processing" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Entity was not persistent in delete processing" );
+			}
 
 			persister = source.getEntityPersister( event.getEntityName(), entity );
 
@@ -136,10 +138,14 @@ public class DefaultDeleteEventListener implements DeleteEventListener {
 			);
 		}
 		else {
-			LOG.trace( "Deleting a persistent instance" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Deleting a persistent instance" );
+			}
 
 			if ( entityEntry.getStatus() == Status.DELETED || entityEntry.getStatus() == Status.GONE ) {
-				LOG.trace( "Object was already deleted" );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace( "Object was already deleted" );
+				}
 				return;
 			}
 			persister = entityEntry.getPersister();
@@ -201,7 +207,9 @@ public class DefaultDeleteEventListener implements DeleteEventListener {
 			Set transientEntities) {
 		LOG.handlingTransientEntity();
 		if ( transientEntities.contains( entity ) ) {
-			LOG.trace( "Already handled transient entity; skipping" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Already handled transient entity; skipping" );
+			}
 			return;
 		}
 		transientEntities.add( entity );

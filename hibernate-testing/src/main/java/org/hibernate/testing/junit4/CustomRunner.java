@@ -182,7 +182,9 @@ public class CustomRunner extends BlockJUnit4ClassRunner {
 			}
 
 			testCount++;
-			log.trace( "adding test " + Helper.extractTestName( frameworkMethod ) + " [#" + testCount + "]" );
+			if ( log.isTraceEnabled() ) {
+				log.trace( "adding test " + Helper.extractTestName( frameworkMethod ) + " [#" + testCount + "]" );
+			}
 			result.add( new ExtendedFrameworkMethod( frameworkMethod, virtualIgnore, failureExpected ) );
 		}
 		return result;

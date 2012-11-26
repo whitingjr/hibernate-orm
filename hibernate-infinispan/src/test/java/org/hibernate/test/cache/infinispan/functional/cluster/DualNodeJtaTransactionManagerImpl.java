@@ -102,8 +102,10 @@ public class DualNodeJtaTransactionManagerImpl implements TransactionManager {
 
    public Transaction suspend() throws SystemException {
       DualNodeJtaTransactionImpl suspended = getCurrentTransaction();
-      log.trace(nodeId + ": Suspending " + suspended + " for thread "
+      if ( LOG.isTraceEnabled() ) {
+    	  log.trace(nodeId + ": Suspending " + suspended + " for thread "
                + Thread.currentThread().getName());
+      }
       currentTransaction.set(null);
       return suspended;
    }
@@ -111,8 +113,10 @@ public class DualNodeJtaTransactionManagerImpl implements TransactionManager {
    public void resume(Transaction transaction) throws InvalidTransactionException,
             IllegalStateException, SystemException {
       currentTransaction.set(transaction);
-      log.trace(nodeId + ": Resumed " + transaction + " for thread "
+      if ( log.isTraceEnabled() ) {
+    	  log.trace(nodeId + ": Resumed " + transaction + " for thread "
                + Thread.currentThread().getName());
+      }
    }
 
    public void commit() throws RollbackException, HeuristicMixedException,

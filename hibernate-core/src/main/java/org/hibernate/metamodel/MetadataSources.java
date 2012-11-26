@@ -150,7 +150,9 @@ public class MetadataSources {
 	 * @return this (for method chaining purposes)
 	 */
 	public MetadataSources addResource(String name) {
-		LOG.tracef( "reading mappings from resource : %s", name );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracef( "reading mappings from resource : %s", name );
+		}
 
 		final Origin origin = new Origin( SourceType.RESOURCE, name );
 		InputStream resourceInputStream = classLoaderService().locateResourceStream( name );
@@ -178,7 +180,9 @@ public class MetadataSources {
 					inputStream.close();
 				}
 				catch ( IOException ignore ) {
-					LOG.trace( "Was unable to close input stream" );
+					if ( LOG.isTraceEnabled() ) {
+						LOG.trace( "Was unable to close input stream" );
+					}
 				}
 			}
 		}
@@ -224,7 +228,9 @@ public class MetadataSources {
 	 */
 	public MetadataSources addFile(File file) {
 		final String name = file.getAbsolutePath();
-		LOG.tracef( "reading mappings from file : %s", name );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracef( "reading mappings from file : %s", name );
+		}
 		final Origin origin = new Origin( SourceType.FILE, name );
 		try {
 			add( new FileInputStream( file ), origin, true );
@@ -331,7 +337,9 @@ public class MetadataSources {
 				while ( jarEntries.hasMoreElements() ) {
 					final ZipEntry zipEntry = (ZipEntry) jarEntries.nextElement();
 					if ( zipEntry.getName().endsWith( ".hbm.xml" ) ) {
-						LOG.tracef( "found mapping document : %s", zipEntry.getName() );
+						if ( LOG.isTraceEnabled() ) {
+							LOG.tracef( "found mapping document : %s", zipEntry.getName() );
+						}
 						try {
 							add( jarFile.getInputStream( zipEntry ), origin, true );
 						}

@@ -83,7 +83,9 @@ public final class HqlParser extends HqlBaseParser {
 		if ( !LOG.isTraceEnabled() ) return;
 		if ( inputState.guessing > 0 ) return;
 		String prefix = StringHelper.repeat( '-', ( traceDepth++ * 2 ) ) + "-> ";
-		LOG.trace( prefix + ruleName );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( prefix + ruleName );
+		}
 	}
 
 	@Override
@@ -91,7 +93,9 @@ public final class HqlParser extends HqlBaseParser {
 		if ( !LOG.isTraceEnabled() ) return;
 		if ( inputState.guessing > 0 ) return;
 		String prefix = "<-" + StringHelper.repeat( '-', ( --traceDepth * 2 ) ) + " ";
-		LOG.trace( prefix + ruleName );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( prefix + ruleName );
+		}
 	}
 
 	@Override

@@ -537,7 +537,7 @@ public class ASTParserLoadingTest extends BaseCoreFunctionalTestCase {
 			fail( "illegal collection dereference semantic did not cause failure" );
 		}
 		catch( QueryException qe ) {
-            log.trace("expected failure...", qe);
+			log.trace("expected failure...", qe);
 		}
 
 		try {
@@ -545,7 +545,7 @@ public class ASTParserLoadingTest extends BaseCoreFunctionalTestCase {
 			fail( "illegal collection dereference semantic did not cause failure" );
 		}
 		catch( QueryException qe ) {
-            log.trace("expected failure...", qe);
+			log.trace("expected failure...", qe);
 		}
 
 		try {
@@ -553,7 +553,7 @@ public class ASTParserLoadingTest extends BaseCoreFunctionalTestCase {
 			fail( "illegal collection dereference semantic did not cause failure" );
 		}
 		catch( QueryException qe ) {
-            log.trace("expected failure...", qe);
+			log.trace("expected failure...", qe);
 		}
 
 		try {
@@ -561,7 +561,7 @@ public class ASTParserLoadingTest extends BaseCoreFunctionalTestCase {
 			fail( "illegal collection dereference semantic did not cause failure" );
 		}
 		catch( QueryException qe ) {
-            log.trace("expected failure...", qe);
+			log.trace("expected failure...", qe);
 		}
 
 		s.getTransaction().commit();

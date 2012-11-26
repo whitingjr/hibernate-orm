@@ -108,7 +108,9 @@ public class JdbcIsolationDelegate implements IsolationDelegate {
 						connection.setAutoCommit( true );
 					}
 					catch ( Exception ignore ) {
-						LOG.trace( "was unable to reset connection back to auto-commit" );
+						if ( LOG.isTraceEnabled() ) {
+							LOG.trace( "was unable to reset connection back to auto-commit" );
+						}
 					}
 				}
 				try {

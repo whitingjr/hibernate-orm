@@ -132,7 +132,9 @@ public class ActionQueue {
 
 	@SuppressWarnings({ "unchecked" })
 	public void addAction(EntityInsertAction action) {
-		LOG.tracev( "Adding an EntityInsertAction for [{0}] object", action.getEntityName() );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Adding an EntityInsertAction for [{0}] object", action.getEntityName() );
+		}
 		addInsertAction( action );
 	}
 
@@ -163,7 +165,9 @@ public class ActionQueue {
 
 	@SuppressWarnings({ "unchecked" })
 	public void addAction(EntityIdentityInsertAction insert) {
-		LOG.tracev( "Adding an EntityIdentityInsertAction for [{0}] object", insert.getEntityName() );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Adding an EntityIdentityInsertAction for [{0}] object", insert.getEntityName() );
+		}
 		addInsertAction( insert );
 	}
 
@@ -171,15 +175,19 @@ public class ActionQueue {
 		if ( insert.isEarlyInsert() ) {
 			// For early inserts, must execute inserts before finding non-nullable transient entities.
 			// TODO: find out why this is necessary
-			LOG.tracev(
-					"Executing inserts before finding non-nullable transient entities for early insert: [{0}]",
-					insert
-			);
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev(
+						"Executing inserts before finding non-nullable transient entities for early insert: [{0}]",
+						insert
+				);
+			}
 			executeInserts();
 		}
 		NonNullableTransientDependencies nonNullableTransientDependencies = insert.findNonNullableTransientEntities();
 		if ( nonNullableTransientDependencies == null ) {
-			LOG.tracev( "Adding insert with no non-nullable, transient entities: [{0}]", insert);
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Adding insert with no non-nullable, transient entities: [{0}]", insert);
+			}
 			addResolvedEntityInsertAction( insert );
 		}
 		else {
@@ -197,13 +205,17 @@ public class ActionQueue {
 	@SuppressWarnings({ "unchecked" })
 	private void addResolvedEntityInsertAction(AbstractEntityInsertAction insert) {
 		if ( insert.isEarlyInsert() ) {
-			LOG.trace( "Executing insertions before resolved early-insert" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Executing insertions before resolved early-insert" );
+			}
 			executeInserts();
 			LOG.debug( "Executing identity-insert immediately" );
 			execute( insert );
 		}
 		else {
-			LOG.trace( "Adding resolved non-early insert action." );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Adding resolved non-early insert action." );
+			}
 			insertions.add( insert );
 		}
 		insert.makeEntityManaged();
@@ -517,47 +529,61 @@ public class ActionQueue {
 	 * @throws IOException Indicates an error writing to the stream
 	 */
 	public void serialize(ObjectOutputStream oos) throws IOException {
-		LOG.trace( "Serializing action-queue" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Serializing action-queue" );
+		}
 
 		unresolvedInsertions.serialize( oos );
 
 		int queueSize = insertions.size();
-		LOG.tracev( "Starting serialization of [{0}] insertions entries", queueSize );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting serialization of [{0}] insertions entries", queueSize );
+		}
 		oos.writeInt( queueSize );
 		for ( int i = 0; i < queueSize; i++ ) {
 			oos.writeObject( insertions.get( i ) );
 		}
 
 		queueSize = deletions.size();
-		LOG.tracev( "Starting serialization of [{0}] deletions entries", queueSize );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting serialization of [{0}] deletions entries", queueSize );
+		}
 		oos.writeInt( queueSize );
 		for ( int i = 0; i < queueSize; i++ ) {
 			oos.writeObject( deletions.get( i ) );
 		}
 
 		queueSize = updates.size();
-		LOG.tracev( "Starting serialization of [{0}] updates entries", queueSize );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting serialization of [{0}] updates entries", queueSize );
+		}
 		oos.writeInt( queueSize );
 		for ( int i = 0; i < queueSize; i++ ) {
 			oos.writeObject( updates.get( i ) );
 		}
 
 		queueSize = collectionUpdates.size();
-		LOG.tracev( "Starting serialization of [{0}] collectionUpdates entries", queueSize );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting serialization of [{0}] collectionUpdates entries", queueSize );
+		}
 		oos.writeInt( queueSize );
 		for ( int i = 0; i < queueSize; i++ ) {
 			oos.writeObject( collectionUpdates.get( i ) );
 		}
 
 		queueSize = collectionRemovals.size();
-		LOG.tracev( "Starting serialization of [{0}] collectionRemovals entries", queueSize );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting serialization of [{0}] collectionRemovals entries", queueSize );
+		}
 		oos.writeInt( queueSize );
 		for ( int i = 0; i < queueSize; i++ ) {
 			oos.writeObject( collectionRemovals.get( i ) );
 		}
 
 		queueSize = collectionCreations.size();
-		LOG.tracev( "Starting serialization of [{0}] collectionCreations entries", queueSize );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting serialization of [{0}] collectionCreations entries", queueSize );
+		}
 		oos.writeInt( queueSize );
 		for ( int i = 0; i < queueSize; i++ ) {
 			oos.writeObject( collectionCreations.get( i ) );
@@ -580,13 +606,17 @@ public class ActionQueue {
 	public static ActionQueue deserialize(
 			ObjectInputStream ois,
 			SessionImplementor session) throws IOException, ClassNotFoundException {
-		LOG.trace( "Dedeserializing action-queue" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Dedeserializing action-queue" );
+		}
 		ActionQueue rtn = new ActionQueue( session );
 
 		rtn.unresolvedInsertions = UnresolvedEntityInsertActions.deserialize( ois, session );
 
 		int queueSize = ois.readInt();
-		LOG.tracev( "Starting deserialization of [{0}] insertions entries", queueSize );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting deserialization of [{0}] insertions entries", queueSize );
+		}
 		rtn.insertions = new ArrayList<Executable>( queueSize );
 		for ( int i = 0; i < queueSize; i++ ) {
 			EntityAction action = ( EntityAction ) ois.readObject();
@@ -595,7 +625,9 @@ public class ActionQueue {
 		}
 
 		queueSize = ois.readInt();
-		LOG.tracev( "Starting deserialization of [{0}] deletions entries", queueSize );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting deserialization of [{0}] deletions entries", queueSize );
+		}
 		rtn.deletions = new ArrayList<EntityDeleteAction>( queueSize );
 		for ( int i = 0; i < queueSize; i++ ) {
 			EntityDeleteAction action = ( EntityDeleteAction ) ois.readObject();
@@ -604,7 +636,9 @@ public class ActionQueue {
 		}
 
 		queueSize = ois.readInt();
-		LOG.tracev( "Starting deserialization of [{0}] updates entries", queueSize );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting deserialization of [{0}] updates entries", queueSize );
+		}
 		rtn.updates = new ArrayList<Executable>( queueSize );
 		for ( int i = 0; i < queueSize; i++ ) {
 			EntityAction action = ( EntityAction ) ois.readObject();
@@ -613,7 +647,9 @@ public class ActionQueue {
 		}
 
 		queueSize = ois.readInt();
-		LOG.tracev( "Starting deserialization of [{0}] collectionUpdates entries", queueSize );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting deserialization of [{0}] collectionUpdates entries", queueSize );
+		}
 		rtn.collectionUpdates = new ArrayList<Executable>( queueSize );
 		for ( int i = 0; i < queueSize; i++ ) {
 			CollectionAction action = (CollectionAction) ois.readObject();
@@ -622,7 +658,9 @@ public class ActionQueue {
 		}
 
 		queueSize = ois.readInt();
-		LOG.tracev( "Starting deserialization of [{0}] collectionRemovals entries", queueSize );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting deserialization of [{0}] collectionRemovals entries", queueSize );
+		}
 		rtn.collectionRemovals = new ArrayList<Executable>( queueSize );
 		for ( int i = 0; i < queueSize; i++ ) {
 			CollectionAction action = ( CollectionAction ) ois.readObject();
@@ -631,7 +669,9 @@ public class ActionQueue {
 		}
 
 		queueSize = ois.readInt();
-		LOG.tracev( "Starting deserialization of [{0}] collectionCreations entries", queueSize );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Starting deserialization of [{0}] collectionCreations entries", queueSize );
+		}
 		rtn.collectionCreations = new ArrayList<Executable>( queueSize );
 		for ( int i = 0; i < queueSize; i++ ) {
 			CollectionAction action = ( CollectionAction ) ois.readObject();

@@ -133,7 +133,9 @@ public class TransactionCoordinatorImpl implements TransactionCoordinator {
 	}
 
 	public void afterTransaction(TransactionImplementor hibernateTransaction, int status) {
-		LOG.trace( "after transaction completion" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "after transaction completion" );
+		}
 
 		final boolean success = JtaStatusHelper.isCommitted( status );
 
@@ -238,13 +240,17 @@ public class TransactionCoordinatorImpl implements TransactionCoordinator {
 
 		// Can we resister a synchronization
 		if ( !jtaPlatform.canRegisterSynchronization() ) {
-			LOG.trace( "registered JTA platform says we cannot currently resister synchronization; skipping" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "registered JTA platform says we cannot currently resister synchronization; skipping" );
+			}
 			return;
 		}
 
 		// Should we resister a synchronization
 		if ( ! transactionFactory().isJoinableJtaTransaction( this, currentHibernateTransaction ) ) {
-			LOG.trace( "TransactionFactory reported no JTA transaction to join; skipping Synchronization registration" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "TransactionFactory reported no JTA transaction to join; skipping Synchronization registration" );
+			}
 			return;
 		}
 

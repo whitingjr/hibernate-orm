@@ -65,14 +65,18 @@ public class DefaultReplicateEventListener extends AbstractSaveEventListener imp
 	public void onReplicate(ReplicateEvent event) {
 		final EventSource source = event.getSession();
 		if ( source.getPersistenceContext().reassociateIfUninitializedProxy( event.getObject() ) ) {
-			LOG.trace( "Uninitialized proxy passed to replicate()" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Uninitialized proxy passed to replicate()" );
+			}
 			return;
 		}
 
 		Object entity = source.getPersistenceContext().unproxyAndReassociate( event.getObject() );
 
 		if ( source.getPersistenceContext().isEntryFor( entity ) ) {
-			LOG.trace( "Ignoring persistent instance passed to replicate()" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Ignoring persistent instance passed to replicate()" );
+			}
 			//hum ... should we cascade anyway? throw an exception? fine like it is?
 			return;
 		}
@@ -119,8 +123,11 @@ public class DefaultReplicateEventListener extends AbstractSaveEventListener imp
 			// else do nothing (don't even reassociate object!)
 			if ( canReplicate )
 				performReplication( entity, id, realOldVersion, persister, replicationMode, source );
-			else
-				LOG.trace( "No need to replicate" );
+			else {
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace( "No need to replicate" );
+				}
+			}
 
 			//TODO: would it be better to do a refresh from db?
 		}

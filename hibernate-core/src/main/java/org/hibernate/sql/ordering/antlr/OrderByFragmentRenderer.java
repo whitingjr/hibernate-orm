@@ -58,7 +58,9 @@ public class OrderByFragmentRenderer extends GeneratedOrderByFragmentRenderer {
 		}
 		String prefix = StringHelper.repeat( '-', (traceDepth++ * 2) ) + "-> ";
 		String traceText = ruleName + " (" + buildTraceNodeName(tree) + ")";
-		LOG.trace( prefix + traceText );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( prefix + traceText );
+		}
 	}
 
 	private String buildTraceNodeName(AST tree) {
@@ -73,6 +75,8 @@ public class OrderByFragmentRenderer extends GeneratedOrderByFragmentRenderer {
 			return;
 		}
 		String prefix = "<-" + StringHelper.repeat( '-', (--traceDepth * 2) ) + " ";
-		LOG.trace( prefix + ruleName );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( prefix + ruleName );
+		}
 	}
 }

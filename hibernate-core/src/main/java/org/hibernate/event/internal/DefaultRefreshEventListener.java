@@ -83,7 +83,9 @@ public class DefaultRefreshEventListener implements RefreshEventListener {
 		final Object object = source.getPersistenceContext().unproxyAndReassociate( event.getObject() );
 
 		if ( refreshedAlready.containsKey(object) ) {
-			LOG.trace( "Already refreshed" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Already refreshed" );
+			}
 			return;
 		}
 

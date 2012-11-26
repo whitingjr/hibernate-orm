@@ -87,7 +87,9 @@ public class JmxServiceImpl implements JmxService, Stoppable {
 				if ( registeredMBeans != null ) {
 					for ( ObjectName objectName : registeredMBeans ) {
 						try {
-							LOG.tracev( "Unregistering registered MBean [ON={0}]", objectName );
+							if ( LOG.isTraceEnabled() ) {
+								LOG.tracev( "Unregistering registered MBean [ON={0}]", objectName );
+							}
 							mBeanServer.unregisterMBean( objectName );
 						}
 						catch ( Exception e ) {
@@ -98,7 +100,9 @@ public class JmxServiceImpl implements JmxService, Stoppable {
 
 				// stop the MBean server if we started it
 				if ( startedServer ) {
-					LOG.trace( "Attempting to release created MBeanServer" );
+					if ( LOG.isTraceEnabled() ) {
+						LOG.trace( "Attempting to release created MBeanServer" );
+					}
 					try {
 						MBeanServerFactory.releaseMBeanServer( mBeanServer );
 					}

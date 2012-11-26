@@ -85,7 +85,9 @@ public abstract class AbstractStatementProxyHandler extends AbstractProxyHandler
 	@Override
 	protected Object continueInvocation(Object proxy, Method method, Object[] args) throws Throwable {
 		final String methodName = method.getName();
-		LOG.tracev( "Handling invocation of statement method [{0}]", methodName );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Handling invocation of statement method [{0}]", methodName );
+		}
 
 		// other methods allowed while invalid ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		if ( "close".equals( methodName ) ) {

@@ -338,7 +338,9 @@ public class ThreadLocalSessionContext extends AbstractCurrentSessionContext {
 					     || "setFlushMode".equals( methodName )
 						 || "getFactory".equals( methodName ) //from SessionImplementor
 					     || "getSessionFactory".equals( methodName ) ) {
-						LOG.tracev( "Allowing method [{0}] in non-transacted context", methodName );
+						if ( LOG.isTraceEnabled() ) {
+							LOG.tracev( "Allowing method [{0}] in non-transacted context", methodName );
+						}
 					}
 					else if ( "reconnect".equals( methodName )
 					          || "disconnect".equals( methodName ) ) {
@@ -348,7 +350,9 @@ public class ThreadLocalSessionContext extends AbstractCurrentSessionContext {
 						throw new HibernateException( methodName + " is not valid without active transaction" );
 					}
 				}
-				LOG.tracev( "Allowing proxied method [{0}] to proceed to real session", methodName );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.tracev( "Allowing proxied method [{0}] to proceed to real session", methodName );
+				}
 				return method.invoke( realSession, args );
 			}
 			catch ( InvocationTargetException e ) {

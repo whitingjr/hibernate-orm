@@ -57,7 +57,9 @@ public class DefaultAutoFlushEventListener extends AbstractFlushingEventListener
 			final int oldSize = source.getActionQueue().numberOfCollectionRemovals();
 			flushEverythingToExecutions(event);
 			if ( flushIsReallyNeeded(event, source) ) {
-				LOG.trace( "Need to execute flush" );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace( "Need to execute flush" );
+				}
 
 				performExecutions(source);
 				postFlush(source);
@@ -69,7 +71,9 @@ public class DefaultAutoFlushEventListener extends AbstractFlushingEventListener
 				}
 			}
 			else {
-				LOG.trace( "Don't need to execute flush" );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.trace( "Don't need to execute flush" );
+				}
 				source.getActionQueue().clearFromFlushNeededCheck( oldSize );
 			}
 

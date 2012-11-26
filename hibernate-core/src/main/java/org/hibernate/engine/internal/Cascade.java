@@ -466,7 +466,9 @@ public final class Cascade {
 		while ( orphanIter.hasNext() ) {
 			Object orphan = orphanIter.next();
 			if (orphan!=null) {
-				LOG.tracev( "Deleting orphaned entity instance: {0}", entityName );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.tracev( "Deleting orphaned entity instance: {0}", entityName );
+				}
 				eventSource.delete( entityName, orphan, false, new HashSet() );
 			}
 		}

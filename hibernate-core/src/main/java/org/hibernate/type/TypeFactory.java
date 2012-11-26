@@ -69,7 +69,9 @@ public final class TypeFactory implements Serializable {
 				LOG.scopingTypesToSessionFactoryAfterAlreadyScoped( this.factory, factory );
 			}
 			else {
-				LOG.tracev( "Scoping types to session factory {0}", factory );
+				if ( LOG.isTraceEnabled() ) {
+					LOG.tracev( "Scoping types to session factory {0}", factory );
+				}
 			}
 			this.factory = factory;
 		}

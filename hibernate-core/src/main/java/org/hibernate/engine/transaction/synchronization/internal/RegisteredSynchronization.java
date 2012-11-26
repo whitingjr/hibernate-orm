@@ -49,7 +49,9 @@ public class RegisteredSynchronization implements Synchronization {
 	 * {@inheritDoc}
 	 */
 	public void beforeCompletion() {
-		LOG.trace( "JTA sync : beforeCompletion()" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "JTA sync : beforeCompletion()" );
+		}
 		synchronizationCallbackCoordinator.beforeCompletion();
 	}
 
@@ -57,7 +59,9 @@ public class RegisteredSynchronization implements Synchronization {
 	 * {@inheritDoc}
 	 */
 	public void afterCompletion(int status) {
-		LOG.tracef( "JTA sync : afterCompletion(%s)", status );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracef( "JTA sync : afterCompletion(%s)", status );
+		}
 		synchronizationCallbackCoordinator.afterCompletion( status );
 	}
 }

@@ -164,11 +164,15 @@ public class QueryPlanCache implements Serializable {
 		HQLQueryPlanKey key = new HQLQueryPlanKey( queryString, shallow, enabledFilters );
 		HQLQueryPlan value = (HQLQueryPlan) queryPlanCache.get( key );
 		if ( value == null ) {
-			LOG.tracev( "Unable to locate HQL query plan in cache; generating ({0})", queryString );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Unable to locate HQL query plan in cache; generating ({0})", queryString );
+			}
 			value = new HQLQueryPlan( queryString, shallow, enabledFilters, factory );
 			queryPlanCache.putIfAbsent( key, value );
 		} else {
-			LOG.tracev( "Located HQL query plan in cache ({0})", queryString );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Located HQL query plan in cache ({0})", queryString );
+			}
 		}
 		return value;
 	}
@@ -180,12 +184,16 @@ public class QueryPlanCache implements Serializable {
 		FilterQueryPlanKey key =  new FilterQueryPlanKey( filterString, collectionRole, shallow, enabledFilters );
 		FilterQueryPlan value = (FilterQueryPlan) queryPlanCache.get( key );
 		if(value == null){
-			LOG.tracev( "Unable to locate collection-filter query plan in cache; generating ({0} : {1} )",
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Unable to locate collection-filter query plan in cache; generating ({0} : {1} )",
 										collectionRole, filterString );
+			}
 			value = new FilterQueryPlan( filterString, collectionRole, shallow, enabledFilters,factory );
 			queryPlanCache.putIfAbsent( key, value );
 		} else {
-			LOG.tracev( "Located collection-filter query plan in cache ({0} : {1})", collectionRole, filterString );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Located collection-filter query plan in cache ({0} : {1})", collectionRole, filterString );
+			}
 		}
 		return value;
 	}
@@ -193,11 +201,15 @@ public class QueryPlanCache implements Serializable {
 	public NativeSQLQueryPlan getNativeSQLQueryPlan(final NativeSQLQuerySpecification spec) {
 		NativeSQLQueryPlan value = (NativeSQLQueryPlan) queryPlanCache.get( spec );
 		if(value == null){
-			LOG.tracev( "Unable to locate native-sql query plan in cache; generating ({0})", spec.getQueryString() );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Unable to locate native-sql query plan in cache; generating ({0})", spec.getQueryString() );
+			}
 			value = new NativeSQLQueryPlan( spec, factory);
 			queryPlanCache.putIfAbsent( spec, value );
 		} else {
-			LOG.tracev( "Located native-sql query plan in cache ({0})", spec.getQueryString() );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Located native-sql query plan in cache ({0})", spec.getQueryString() );
+			}
 		}
 		return value;
 	}
@@ -205,7 +217,9 @@ public class QueryPlanCache implements Serializable {
 
 	//clean up QueryPlanCache when Sessionfactory is closed
 	public void cleanup() {
-		LOG.trace( "Cleaning QueryPlan Cache" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Cleaning QueryPlan Cache" );
+		}
 		queryPlanCache.clear();
 		parameterMetadataCache.clear();
 	}

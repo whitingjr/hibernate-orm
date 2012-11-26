@@ -64,7 +64,9 @@ public abstract class BasicExtractor<J> implements ValueExtractor<J> {
 	public J extract(ResultSet rs, String name, WrapperOptions options) throws SQLException {
 		final J value = doExtract( rs, name, options );
 		if ( value == null || rs.wasNull() ) {
-			LOG.tracev( "Found [null] as column [{0}]", name );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Found [null] as column [{0}]", name );
+			}
 			return null;
 		}
 		else {

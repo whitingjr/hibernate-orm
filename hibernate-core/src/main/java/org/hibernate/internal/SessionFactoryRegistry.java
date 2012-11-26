@@ -113,7 +113,9 @@ public class SessionFactoryRegistry {
 
 			if ( isNameAlsoJndiName ) {
 				try {
-					LOG.tracef( "Unbinding SessionFactory from JNDI : %s", name );
+					if ( LOG.isTraceEnabled() ) { 
+						LOG.tracef( "Unbinding SessionFactory from JNDI : %s", name );
+					}
 					jndiService.unbind( name );
 					LOG.factoryUnboundFromJndiName( name );
 				}
@@ -191,7 +193,9 @@ public class SessionFactoryRegistry {
 				throws Exception {
 			LOG.debugf( "JNDI lookup: %s", name );
 			final String uuid = (String) ( (Reference) reference ).get( 0 ).getContent();
-			LOG.tracef( "Resolved to UUID = %s", uuid );
+			if ( LOG.isTraceEnabled() ) { 
+				LOG.tracef( "Resolved to UUID = %s", uuid );
+			}
 			return INSTANCE.getSessionFactory( uuid );
 		}
 	}

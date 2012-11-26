@@ -65,7 +65,9 @@ public class DbTimestampType extends TimestampType {
 	@Override
 	public Date seed(SessionImplementor session) {
 		if ( session == null ) {
-			LOG.trace( "Incoming session was null; using current jvm time" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Incoming session was null; using current jvm time" );
+			}
 			return super.seed( session );
 		}
 		else if ( !session.getFactory().getDialect().supportsCurrentTimestampSelection() ) {

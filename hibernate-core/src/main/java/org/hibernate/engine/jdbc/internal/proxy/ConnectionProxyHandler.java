@@ -107,7 +107,9 @@ public class ConnectionProxyHandler
 	@Override
 	protected Object continueInvocation(Object proxy, Method method, Object[] args) throws Throwable {
 		final String methodName = method.getName();
-		LOG.tracev( "Handling invocation of connection method [{0}]", methodName );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Handling invocation of connection method [{0}]", methodName );
+		}
 
 		// other methods allowed while invalid ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		if ( "close".equals( methodName ) ) {
@@ -203,7 +205,9 @@ public class ConnectionProxyHandler
 	}
 
 	private void invalidateHandle() {
-		LOG.trace( "Invalidating connection handle" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Invalidating connection handle" );
+		}
 		logicalConnection = null;
 		invalidate();
 	}

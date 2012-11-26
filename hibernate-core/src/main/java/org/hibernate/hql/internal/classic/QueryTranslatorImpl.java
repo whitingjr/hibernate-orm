@@ -234,7 +234,9 @@ public class QueryTranslatorImpl extends BasicLoader implements FilterTranslator
 	 * failure.
 	 */
 	private void compile() throws QueryException, MappingException {
-		LOG.trace( "Compiling query" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Compiling query" );
+		}
 		try {
 			ParserHelper.parse( new PreprocessingParser( tokenReplacements ),
 					queryString,

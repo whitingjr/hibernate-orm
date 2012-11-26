@@ -337,7 +337,9 @@ public final class SessionImpl extends AbstractSessionImpl implements EventSourc
 	}
 
 	public Connection close() throws HibernateException {
-		LOG.trace( "Closing session" );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.trace( "Closing session" );
+		}
 		if ( isClosed() ) {
 			throw new SessionException( "Session was already closed" );
 		}
@@ -395,10 +397,14 @@ public final class SessionImpl extends AbstractSessionImpl implements EventSourc
 
 	public void managedFlush() {
 		if ( isClosed() ) {
-			LOG.trace( "Skipping auto-flush due to session closed" );
+			if ( LOG.isTraceEnabled() ) { 
+				LOG.trace( "Skipping auto-flush due to session closed" );
+			}
 			return;
 		}
-		LOG.trace( "Automatically flushing session" );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.trace( "Automatically flushing session" );
+		}
 		flush();
 	}
 
@@ -539,7 +545,9 @@ public final class SessionImpl extends AbstractSessionImpl implements EventSourc
 	}
 
 	public void managedClose() {
-		LOG.trace( "Automatically closing session" );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.trace( "Automatically closing session" );
+		}
 		close();
 	}
 
@@ -606,7 +614,9 @@ public final class SessionImpl extends AbstractSessionImpl implements EventSourc
 
 	@Override
 	public void beforeTransactionCompletion(TransactionImplementor hibernateTransaction) {
-		LOG.trace( "before transaction completion" );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.trace( "before transaction completion" );
+		}
 		actionQueue.beforeTransactionCompletion();
 		try {
 			interceptor.beforeTransactionCompletion( hibernateTransaction );
@@ -618,7 +628,9 @@ public final class SessionImpl extends AbstractSessionImpl implements EventSourc
 
 	@Override
 	public void afterTransactionCompletion(TransactionImplementor hibernateTransaction, boolean successful) {
-		LOG.trace( "after transaction completion" );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.trace( "after transaction completion" );
+		}
 		persistenceContext.afterTransactionCompletion();
 		actionQueue.afterTransactionCompletion( successful );
 		if ( hibernateTransaction != null ) {
@@ -1363,7 +1375,9 @@ public final class SessionImpl extends AbstractSessionImpl implements EventSourc
 	public void setFlushMode(FlushMode flushMode) {
 		errorIfClosed();
 		checkTransactionSynchStatus();
-		LOG.tracev( "Setting flush mode to: {0}", flushMode );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.tracev( "Setting flush mode to: {0}", flushMode );
+		}
 		this.flushMode = flushMode;
 	}
 
@@ -1380,7 +1394,9 @@ public final class SessionImpl extends AbstractSessionImpl implements EventSourc
 	public void setCacheMode(CacheMode cacheMode) {
 		errorIfClosed();
 		checkTransactionSynchStatus();
-		LOG.tracev( "Setting cache mode to: {0}", cacheMode );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.tracev( "Setting cache mode to: {0}", cacheMode );
+		}
 		this.cacheMode= cacheMode;
 	}
 
@@ -2073,7 +2089,9 @@ public final class SessionImpl extends AbstractSessionImpl implements EventSourc
 	 * @throws ClassNotFoundException Indicates a class resolution issue
 	 */
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		LOG.trace( "Deserializing session" );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.trace( "Deserializing session" );
+		}
 
 		ois.defaultReadObject();
 
@@ -2117,7 +2135,9 @@ public final class SessionImpl extends AbstractSessionImpl implements EventSourc
 			throw new IllegalStateException( "Cannot serialize a session while connected" );
 		}
 
-		LOG.trace( "Serializing session" );
+		if ( LOG.isTraceEnabled() ) { 
+			LOG.trace( "Serializing session" );
+		}
 
 		oos.defaultWriteObject();
 

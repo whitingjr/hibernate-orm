@@ -1206,7 +1206,9 @@ public abstract class AbstractEntityPersister
 
 		if ( !hasLazyProperties() ) throw new AssertionFailure( "no lazy properties" );
 
-		LOG.trace( "Initializing lazy properties from datastore" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Initializing lazy properties from datastore" );
+		}
 
 		try {
 
@@ -1248,7 +1250,9 @@ public abstract class AbstractEntityPersister
 				}
 			}
 
-			LOG.trace( "Done initializing lazy properties" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Done initializing lazy properties" );
+			}
 
 			return result;
 
@@ -1271,7 +1275,9 @@ public abstract class AbstractEntityPersister
 			final CacheEntry cacheEntry
 	) {
 
-		LOG.trace( "Initializing lazy properties from second-level cache" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Initializing lazy properties from second-level cache" );
+		}
 
 		Object result = null;
 		Serializable[] disassembledValues = cacheEntry.getDisassembledState();
@@ -1287,7 +1293,9 @@ public abstract class AbstractEntityPersister
 			}
 		}
 
-		LOG.trace( "Done initializing lazy properties" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Done initializing lazy properties" );
+		}
 
 		return result;
 	}

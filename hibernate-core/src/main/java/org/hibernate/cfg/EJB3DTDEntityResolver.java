@@ -55,7 +55,9 @@ public class EJB3DTDEntityResolver extends DTDEntityResolver {
 
 	@Override
 	public InputSource resolveEntity(String publicId, String systemId) {
-		LOG.tracev( "Resolving XML entity {0} : {1}", publicId, systemId );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Resolving XML entity {0} : {1}", publicId, systemId );
+		}
 		InputSource is = super.resolveEntity( publicId, systemId );
 		if ( is == null ) {
 			if ( systemId != null ) {
@@ -91,10 +93,14 @@ public class EJB3DTDEntityResolver extends DTDEntityResolver {
 
 	private InputSource buildInputSource(String publicId, String systemId, InputStream dtdStream, boolean resolved) {
 		if ( dtdStream == null ) {
-			LOG.tracev( "Unable to locate [{0}] on classpath", systemId );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.tracev( "Unable to locate [{0}] on classpath", systemId );
+			}
 			return null;
 		}
-		LOG.tracev( "Located [{0}] in classpath", systemId );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Located [{0}] in classpath", systemId );
+		}
 		InputSource source = new InputSource( dtdStream );
 		source.setPublicId( publicId );
 		source.setSystemId( systemId );
@@ -103,7 +109,9 @@ public class EJB3DTDEntityResolver extends DTDEntityResolver {
 	}
 
 	private InputStream getStreamFromClasspath(String fileName) {
-		LOG.trace( "Recognized JPA ORM namespace; attempting to resolve on classpath under org/hibernate/ejb" );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.trace( "Recognized JPA ORM namespace; attempting to resolve on classpath under org/hibernate/ejb" );
+		}
 		String path = "org/hibernate/ejb/" + fileName;
 		InputStream dtdStream = resolveInHibernateNamespace( path );
 		return dtdStream;

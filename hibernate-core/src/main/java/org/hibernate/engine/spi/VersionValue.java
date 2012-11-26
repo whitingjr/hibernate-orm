@@ -49,7 +49,9 @@ public class VersionValue implements UnsavedValueStrategy {
 	public static final VersionValue NULL = new VersionValue() {
 		@Override
 		public final Boolean isUnsaved(Object version) {
-			LOG.trace( "Version unsaved-value strategy NULL" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Version unsaved-value strategy NULL" );
+			}
 			return version==null;
 		}
 		@Override
@@ -68,7 +70,9 @@ public class VersionValue implements UnsavedValueStrategy {
 	public static final VersionValue UNDEFINED = new VersionValue() {
 		@Override
 		public final Boolean isUnsaved(Object version) {
-			LOG.trace( "Version unsaved-value strategy UNDEFINED" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Version unsaved-value strategy UNDEFINED" );
+			}
 			return version==null ? Boolean.TRUE : null;
 		}
 		@Override
@@ -88,7 +92,9 @@ public class VersionValue implements UnsavedValueStrategy {
 
 		@Override
 		public final Boolean isUnsaved(Object version) throws MappingException {
-			LOG.trace( "Version unsaved-value strategy NEGATIVE" );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Version unsaved-value strategy NEGATIVE" );
+			}
 			if (version==null) return Boolean.TRUE;
 			if ( version instanceof Number ) {
 				return ( (Number) version ).longValue() < 0l;
@@ -122,7 +128,9 @@ public class VersionValue implements UnsavedValueStrategy {
 
 	@Override
 	public Boolean isUnsaved(Object version) throws MappingException  {
-		LOG.tracev( "Version unsaved-value: {0}", value );
+		if ( LOG.isTraceEnabled() ) {
+			LOG.tracev( "Version unsaved-value: {0}", value );
+		}
 		return version==null || version.equals(value);
 	}
 

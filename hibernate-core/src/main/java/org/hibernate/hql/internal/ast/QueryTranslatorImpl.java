@@ -213,13 +213,17 @@ public class QueryTranslatorImpl implements FilterTranslator {
 		catch ( RecognitionException e ) {
 			// we do not actually propagate ANTLRExceptions as a cause, so
 			// log it here for diagnostic purposes
-			LOG.trace( "Converted antlr.RecognitionException", e );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Converted antlr.RecognitionException", e );
+			}
 			throw QuerySyntaxException.convert( e, hql );
 		}
 		catch ( ANTLRException e ) {
 			// we do not actually propagate ANTLRExceptions as a cause, so
 			// log it here for diagnostic purposes
-			LOG.trace( "Converted antlr.ANTLRException", e );
+			if ( LOG.isTraceEnabled() ) {
+				LOG.trace( "Converted antlr.ANTLRException", e );
+			}
 			throw new QueryException( e.getMessage(), hql );
 		}
 

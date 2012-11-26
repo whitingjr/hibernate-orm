@@ -77,7 +77,9 @@ public class XaTransactionImpl implements Transaction {
             IllegalStateException, SystemException {
 
       if (status == Status.STATUS_MARKED_ROLLBACK) {
-         log.trace("on commit, status was marked for rollback-only");
+    	  if ( log.isTraceEnabled() ) {
+    		  log.trace("on commit, status was marked for rollback-only");
+    	  }
          rollback();
       } else {
          status = Status.STATUS_PREPARING;
@@ -196,10 +198,14 @@ public class XaTransactionImpl implements Transaction {
          try {
             res.prepare(xid);
          } catch (XAException e) {
-            log.trace("The resource wants to rollback!", e);
+        	 if ( log.isTraceEnabled() ) {
+        		 log.trace("The resource wants to rollback!", e);
+        	 }
             return false;
          } catch (Throwable th) {
-            log.error("Unexpected error from resource manager!", th);
+        	 if ( log.isTraceEnabled() ) {
+        		 log.error("Unexpected error from resource manager!", th);
+        	 }
             throw new SystemException(th.getMessage());
          }
       }
@@ -268,7 +274,9 @@ public class XaTransactionImpl implements Transaction {
          if (prepareResult != XAResource.XA_RDONLY)
             xaResource.commit(xid, b);
          else
-            log.tracef("Not committing {0} due to readonly.", xid);
+        	 if ( log.isTraceEnabled() ) {
+        		 log.tracef("Not committing {0} due to readonly.", xid);
+        	 }
       }
 
       @Override
