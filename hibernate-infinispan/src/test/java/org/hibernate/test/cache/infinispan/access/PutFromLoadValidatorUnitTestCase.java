@@ -404,18 +404,14 @@ public class PutFromLoadValidatorUnitTestCase {
                      registeredLatch.await(5, TimeUnit.SECONDS);
                      if (testee.acquirePutFromLoadLock(KEY1)) {
                         try {
-                        	if ( LOG.isTraceEnabled() ) {
-                        		log.trace("Put from load lock acquired for key = " + KEY1);
-                        	}
+                           log.trace("Put from load lock acquired for key = " + KEY1);
                            success.incrementAndGet();
                         }
                         finally {
                            testee.releasePutFromLoadLock(KEY1);
                         }
                      } else {
-                    	 if ( LOG.isTraceEnabled() ) {
-                    		 log.trace("Unable to acquired putFromLoad lock for key = " + KEY1);
-                    	 }
+                		log.trace("Unable to acquired putFromLoad lock for key = " + KEY1);
                      }
                      finishedLatch.countDown();
                   }

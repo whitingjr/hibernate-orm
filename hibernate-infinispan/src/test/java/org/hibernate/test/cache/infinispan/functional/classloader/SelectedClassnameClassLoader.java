@@ -103,9 +103,7 @@ public class SelectedClassnameClassLoader extends ClassLoader {
     @Override
     protected synchronized Class<?> loadClass( String name,
                                                boolean resolve ) throws ClassNotFoundException {
-    	if ( LOG.isTraceEnabled() ) {
-    		log.trace("loadClass(" + name + "," + resolve + ")");
-    	}
+		log.trace("loadClass(" + name + "," + resolve + ")");
         if (isIncluded(name) && (isExcluded(name) == false)) {
             Class c = findClass(name);
 
@@ -122,9 +120,7 @@ public class SelectedClassnameClassLoader extends ClassLoader {
 
     @Override
     protected Class<?> findClass( String name ) throws ClassNotFoundException {
-    	if ( LOG.isTraceEnabled() ) {
-    		log.trace("findClass(" + name + ")");
-    	}
+		log.trace("findClass(" + name + ")");
         Class result = classes.get(name);
         if (result != null) {
             return result;

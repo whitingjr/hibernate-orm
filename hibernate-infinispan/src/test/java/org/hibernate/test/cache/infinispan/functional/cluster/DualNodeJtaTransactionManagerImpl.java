@@ -102,10 +102,8 @@ public class DualNodeJtaTransactionManagerImpl implements TransactionManager {
 
    public Transaction suspend() throws SystemException {
       DualNodeJtaTransactionImpl suspended = getCurrentTransaction();
-      if ( LOG.isTraceEnabled() ) {
-    	  log.trace(nodeId + ": Suspending " + suspended + " for thread "
-               + Thread.currentThread().getName());
-      }
+	  log.trace(nodeId + ": Suspending " + suspended + " for thread "
+           + Thread.currentThread().getName());
       currentTransaction.set(null);
       return suspended;
    }
