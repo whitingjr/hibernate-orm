@@ -53,6 +53,14 @@ task writeNewPom << {
                     configuration {
                        skipErrorNoDescriptorsFound 'true'
                     }
+                    executions {
+                        execution {
+                            id 'mojo-descriptor'
+                            goals {
+                                goal 'descriptor'
+                            }
+                        }
+                    }
                  }
              }
          }
@@ -65,12 +73,9 @@ task writeNewPom << {
     ext.pomDefinition.writeTo("$projectDir/pom.xml")
 }
 /*
-Couple of things. a) the 2 descriptor files for the Mojo are currently static.
+a) the 2 descriptor files for the Mojo are currently static.
 Until Gradle support for calling Maven goals is implemented you'll need to 
 manually update the 2 descriptors in the resources directory.
-b) Maven mojo annotation processing is knackered, you'll need to call the 
-package goal twice in succession for plexus to generate the mojo definition.
-$ mvn clean package package
 */
 
 processResources.dependsOn writeNewPom
