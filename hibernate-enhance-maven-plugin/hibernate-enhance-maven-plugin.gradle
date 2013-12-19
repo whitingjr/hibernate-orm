@@ -1,0 +1,77 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile( libraries.maven_plugin ) {
+       transitive = false
+    }
+    compile( libraries.maven_plugin_tools ) {
+        transitive = false
+    }
+    compile( project(':hibernate-core') ) {
+       transitive = false
+    }
+    compile( libraries.jpa ){
+       transitive = false
+    }
+    compile( libraries.javassist ){
+       transitive = false
+    }
+    compile 'org.codehaus.plexus:plexus-utils:3.0.1'
+}
+configurations {
+    compile.transitive = false
+    jaxb.transitive = false
+    jbossLoggingTool.transitive = false
+    testCompile.transitive = false
+    testRuntime.transitive = false
+}
+
+configurations.remove(configurations.getByName('hibernateJpaModelGenTool'))
+configurations.remove(configurations.getByName('jaxb'))
+configurations.remove(configurations.getByName('testRuntime'))
+configurations.remove(configurations.getByName('testCompile'))
+
+//TODO: update the build when Gradle integration for calling Maven goals
+
+task writeNewPom << {
+    ext.pomDefinition = pom {
+       project {
+         groupId  'org.hibernate.orm.tooling'
+         packaging 'maven-plugin'
+         name 'Enhance Plugin of the Hibernate project for use with Maven build system.'
+         build {
+             plugins {
+                 plugin { 
+                    groupId 'org.apache.maven.plugins'
+                    artifactId 'maven-plugin-plugin'
+                    version '3.2'
+                    configuration {
+                       skipErrorNoDescriptorsFound 'true'
+                    }
+                 }
+             }
+         }
+         properties {
+            'project.build.sourceEncoding' 'UTF-8'
+         }
+      }
+    }
+    ext.pomDefinition.writeTo("$projectDir/src/main/resources/pom.xml")
+    ext.pomDefinition.writeTo("$projectDir/pom.xml")
+}
+/*
+Couple of things. a) the 2 descriptor files for the Mojo are currently static.
+Until Gradle support for calling Maven goals is implemented you'll need to 
+manually update the 2 descriptors in the resources directory.
+b) Maven mojo annotation processing is knackered, you'll need to call the 
+package goal twice in succession for plexus to generate the mojo definition.
+$ mvn clean package package
+*/
+
+processResources.dependsOn writeNewPom
+
