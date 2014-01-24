@@ -146,6 +146,7 @@ public class MavenEnhancePlugin extends AbstractMojo implements EnhancementConte
 
     private void processEntityClassFile(File javaClassFile, CtClass ctClass ) {
         try {
+            getLog().info( String.format("Processing Entity class file [%1$s].", ctClass.getName()) );
             byte[] result = enhancer.enhance( ctClass.getName(), ctClass.toBytecode() );
             if(result != null)
                 writeEnhancedClass(javaClassFile, result);
@@ -158,6 +159,7 @@ public class MavenEnhancePlugin extends AbstractMojo implements EnhancementConte
 
     private void processCompositeClassFile(File javaClassFile, CtClass ctClass) {
         try {
+            getLog().info( String.format("Processing Composite class file [%1$s].", ctClass.getName()) );
             byte[] result = enhancer.enhanceComposite(ctClass.getName(), ctClass.toBytecode());
             if(result != null)
                 writeEnhancedClass(javaClassFile, result);

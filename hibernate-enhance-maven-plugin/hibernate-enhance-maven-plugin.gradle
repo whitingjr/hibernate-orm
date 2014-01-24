@@ -1,8 +1,19 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 
+group = 'org.hibernate.orm.tooling'
+
 repositories {
     mavenCentral()
+}
+
+processResources.doLast {
+    project.build.outputDirectory = '${project.build.outputDirectory}'
+    copy {
+        from 'src/main/resources'
+        into processResources.destinationDir
+        expand ([ version: version, project: project, dir: '${dir}' ])
+    }
 }
 
 dependencies {
@@ -22,26 +33,28 @@ dependencies {
        transitive = false
     }
     compile 'org.codehaus.plexus:plexus-utils:3.0.1'
-}
-configurations {
-    compile.transitive = false
-    jaxb.transitive = false
-    jbossLoggingTool.transitive = false
-    testCompile.transitive = false
-    testRuntime.transitive = false
+    
+    runtime( libraries.maven_plugin ) {
+    }
+    runtime( libraries.maven_plugin_tools ) {
+    }
+    runtime( project(':hibernate-core') ) {
+    }
+    runtime( libraries.jpa ){
+    }
+    runtime( libraries.javassist ){
+    }
+    runtime 'org.codehaus.plexus:plexus-utils:3.0.1'
 }
 
-configurations.remove(configurations.getByName('hibernateJpaModelGenTool'))
-configurations.remove(configurations.getByName('jaxb'))
-configurations.remove(configurations.getByName('testRuntime'))
+// avoiding test dependencies in generated pom
 configurations.remove(configurations.getByName('testCompile'))
+configurations.remove(configurations.getByName('testRuntime'))
 
-//TODO: update the build when Gradle integration for calling Maven goals
-
-task writeNewPom << {
+task writeNewPom(type:Task, description: 'Writes pom.xml using merged Gradle dependency and MavenPom configuration.') {
     ext.pomDefinition = pom {
        project {
-         groupId  'org.hibernate.orm.tooling'
+         groupId  project.group
          packaging 'maven-plugin'
          name 'Enhance Plugin of the Hibernate project for use with Maven build system.'
          build {
@@ -70,13 +83,7 @@ task writeNewPom << {
       }
     }
     ext.pomDefinition.writeTo("$projectDir/src/main/resources/pom.xml")
-    ext.pomDefinition.writeTo("$projectDir/pom.xml")
 }
-/*
-a) the 2 descriptor files for the Mojo are currently static.
-Until Gradle support for calling Maven goals is implemented you'll need to 
-manually update the 2 descriptors in the resources directory.
-*/
 
 processResources.dependsOn writeNewPom
 
