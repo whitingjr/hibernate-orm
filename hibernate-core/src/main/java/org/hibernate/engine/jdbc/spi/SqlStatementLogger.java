@@ -104,11 +104,13 @@ public class SqlStatementLogger {
 		if ( format ) {
 			if ( logToStdout || LOG.isDebugEnabled() ) {
 				statement = formatter.format( statement );
+				if ( logToStdout ) {
+					System.out.println( "Hibernate: " + statement );
+				}
+				if (LOG.isDebugEnabled()) {
+					LOG.debug( statement );
+				}
 			}
-		}
-		LOG.debug( statement );
-		if ( logToStdout ) {
-			System.out.println( "Hibernate: " + statement );
 		}
 	}
 }
