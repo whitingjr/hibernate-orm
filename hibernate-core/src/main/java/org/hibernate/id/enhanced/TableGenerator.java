@@ -537,7 +537,7 @@ public class TableGenerator implements PersistentIdentifierGenerator, Configurab
 										while ( rows == 0 );
 
 										accessCount++;
-
+										LOG.nextRange(segmentValue, tableName);
 										return value;
 									}
 								},

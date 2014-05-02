@@ -1652,4 +1652,8 @@ public interface CoreMessageLogger extends BasicLogger {
 	@LogMessage(level = DEBUG)
 	@Message(value = "Creating pooled optimizer (lo) with [incrementSize=%s; returnClass=%s]", id = 467)
 	void creatingPooledLoOptimizer(int incrementSize, String name);
+	
+	@LogMessage(level = DEBUG)
+	@Message(value = "Next id range obtained[start=%s; name=%s]", id = 470)
+	void nextRange(String start, String name);
 }
